@@ -1,3 +1,0 @@
-/home/now/Control/build/CMakeFiles/hw-control-sdl.dir
-/home/now/Control/build/CMakeFiles/edit_cache.dir
-/home/now/Control/build/CMakeFiles/rebuild_cache.dir
