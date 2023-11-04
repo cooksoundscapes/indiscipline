@@ -15,17 +15,17 @@ GPIO::~GPIO() {
   gpioTerminate();
 }
 
-void GPIO::registerPin(std::string name, int pin, unsigned mode) {
+void GPIO::addController(int pin, controller ctrl, unsigned mode) {
   gpioSetMode(pin, mode);
   if (mode == PI_INPUT) {
     gpioSetPullUpDown(pin, PI_PUD_UP);
   }
   gpioSetAlertFuncEx(pin, default_callback, this);
-  pins.insert({pin, name});
+  pins.insert({pin, ctrl});
 }
 
 void GPIO::default_callback(int pin, int level, uint32_t tick, void* userData) {
   auto gpio = (GPIO*)userData;
-  auto& name = gpio->pins[pin];
-  std::cout << "Pin " << name << " is at level " << level << "; ticks(?) value is " << tick << '\n';
+  auto& ctrl = gpio->pins[pin];
+  ctrl.action(ctrl.name, level);
 }

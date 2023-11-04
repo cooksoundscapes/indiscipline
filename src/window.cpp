@@ -56,17 +56,20 @@ void Window::loop()
     w,
     h
   );
+  auto start = SDL_GetTicks();
+  auto end = SDL_GetTicks();
+  float delta = 0;
+    
   while (!shouldQuit) {
-    uint64_t start = SDL_GetPerformanceCounter();
-    if (hardwarePanel)
-      hardwarePanel->read();
-    handleEvents();
-    updateWindow();
-    uint64_t end = SDL_GetPerformanceCounter();
-
-    float elapsed = (end - start) / (float)SDL_GetPerformanceFrequency();
-    fps = 1.0f / elapsed;
-    luaInterpreter->setGlobal("fps", (int)fps);
+    start = SDL_GetTicks();
+		delta = start - end;
+    if (delta > 1000/30.0) {
+			handleEvents();
+			updateWindow();
+			end = start;
+			fps = 1000 / delta;
+			luaInterpreter->setGlobal("fps", (int)fps);
+		}
   }
   SDL_DestroyTexture(screen);
   screen = NULL;
