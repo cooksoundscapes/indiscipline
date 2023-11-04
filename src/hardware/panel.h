@@ -8,7 +8,9 @@
 #include <functional>
 
 class Panel : public AbstractPanel {
-  std::unordered_map<std::string, std::shared_ptr<PCF8574>> inputDevices;
+	using I2CDevices = std::unordered_map<std::string, std::shared_ptr<I2CDevice>>;
+
+	I2CDevices inputDevices;
   std::shared_ptr<GPIO> gpio;
   
   std::function<void(std::string, int)> buttonAction;
