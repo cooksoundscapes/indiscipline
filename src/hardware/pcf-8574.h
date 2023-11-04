@@ -14,8 +14,9 @@ public:
 };
 
 class EncoderGroup : public PCF8574 {
-  const std::array<std::bitset<4>, 4> cw = {0xE, 0x8, 0x1, 0x7};
-  const std::array<std::bitset<4>, 4> ccw = {0x4, 0x2, 0xB, 0xD};
+	//gray code
+  const std::array<std::bitset<4>, 4> cw = {0b1110, 0b1000, 0b0001, 0b0111};
+  const std::array<std::bitset<4>, 4> ccw = {0b0100, 0b0010, 0b1011, 0b1101};
 
   std::array<int, 4> readEncoderData(const std::bitset<8>&);
   int getRotationDirection(int, int);

@@ -45,9 +45,9 @@ std::array<int, 4> EncoderGroup::readEncoderData(const std::bitset<8>& state) {
 
 int EncoderGroup::getRotationDirection(int previousState, int currentState) {
     std::bitset<4> stack((previousState << 2) | currentState);
-    if (stack == 0b1110 || stack == 0b1000 || stack == 0b0001 || stack == 0b0111) {
+    if (stack == cw[0] || stack == cw[1] || stack == cw[2] || stack == cw[3]) {
         return 1; // Clockwise
-    } else if (stack == 0b0100 || stack == 0b0010 || stack == 0b1011 || stack == 0b1101) {
+    } else if (stack == ccw[0] || stack == ccw[1] || stack == ccw[2] || stack == ccw[3]) {
         return -1; // Counterclockwise
     } else {
         return 0; // No rotation

@@ -23,6 +23,7 @@ set(SOURCES
         src/audio-sink.cpp
         src/osc-server.cpp
         src/hardware/pcf-8574.cpp
+        src/hardware/gpio.cpp
 )
 
 include_directories(hw-control-sdl /usr/include/pango-1.0)
@@ -38,6 +39,8 @@ add_executable(hw-control-sdl ${SOURCES})
 target_link_libraries(hw-control-sdl
         jack
         i2c
+        pigpio
+        rt
         lo
         lua
         SDL2
