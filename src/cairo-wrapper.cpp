@@ -6,14 +6,24 @@
 cairo_t* Cairo::cr = nullptr;
 cairo_surface_t* Cairo::surface = nullptr;
 
-void Cairo::createSurfaceForData(int w, int h, unsigned char* pixels, int stride)
+int Cairo::getStrideForWidth_A8(int width) {
+  return cairo_format_stride_for_width(CAIRO_FORMAT_A8, width);
+}
+
+void Cairo::createSurfaceForData(int w, int h, unsigned char* pixels, int stride, cairo_format_t format)
 {
   surface = cairo_image_surface_create_for_data(
     pixels,
-    CAIRO_FORMAT_ARGB32,
+    format,
     w, h, stride
   );
   cr = cairo_create(surface);
+}
+void Cairo::createSurfaceForData_ARGB32(int w, int h, unsigned char* pixels, int stride) {
+  createSurfaceForData(w, h, pixels, stride, CAIRO_FORMAT_ARGB32);
+}
+void Cairo::createSurfaceForData_A8(int w, int h, unsigned char* pixels, int stride) {
+  createSurfaceForData(w, h, pixels, stride, CAIRO_FORMAT_A8);
 }
 
 void Cairo::finalize() {
@@ -21,6 +31,10 @@ void Cairo::finalize() {
     cairo_destroy(cr);
   if (surface)
     cairo_surface_destroy(surface);
+}
+
+void Cairo::flush() {
+  cairo_surface_flush(surface);
 }
 
 void Cairo::set_source_rgb(double r, double g, double b) {

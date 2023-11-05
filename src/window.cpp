@@ -68,7 +68,7 @@ void Window::loop()
 			updateWindow();
 			end = start;
 			fps = 1000 / delta;
-			luaInterpreter->setGlobal("fps", (int)fps);
+			luaInterpreter->setGlobal("fps", fps);
 		}
   }
   SDL_DestroyTexture(screen);
@@ -100,7 +100,7 @@ void Window::draw() {
   SDL_LockTexture(screen, NULL, &rawData, &stride);
   auto pixels = static_cast<unsigned char*>(rawData);
 
-  Cairo::createSurfaceForData(w, h, pixels, stride);
+  Cairo::createSurfaceForData_ARGB32(w, h, pixels, stride);
 
   if (luaInterpreter != nullptr)
     luaInterpreter->draw();

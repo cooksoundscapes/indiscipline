@@ -17,8 +17,7 @@ public:
 
   void loadFile(std::string file);
 
-  void setGlobal(std::string name, int value);
-  void setGlobal(std::string name, float value);
+  void setGlobal(std::string name, double value);
 
   void draw() override;
   void loadFunction(std::string name, lua_CFunction fn);

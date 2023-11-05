@@ -7,8 +7,7 @@ class LuaRunnerBase
 {
 public:
   virtual void loadFile(std::string file) = 0;
-  virtual void setGlobal(std::string, int) = 0;
-  virtual void setGlobal(std::string, float) = 0;
+  virtual void setGlobal(std::string, double) = 0;
   virtual void draw() = 0;
 
   struct Param {

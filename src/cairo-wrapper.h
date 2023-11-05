@@ -5,8 +5,12 @@ namespace Cairo {
   extern cairo_t* cr;
   extern cairo_surface_t* surface;
 
-  extern void createSurfaceForData(int w, int h, unsigned char* pixels, int stride);
+  extern int getStrideForWidth_A8(int w);
+  extern void createSurfaceForData(int w, int h, unsigned char* pixels, int stride, cairo_format_t format);
+  extern void createSurfaceForData_ARGB32(int w, int h, unsigned char* pixels, int stride);
+  extern void createSurfaceForData_A8(int w, int h, unsigned char* pixels, int stride);
   extern void finalize();
+  extern void flush();
 
   extern void set_source_rgb(double, double, double);
   extern void rectangle(double, double, double, double);

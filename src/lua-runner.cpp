@@ -184,11 +184,7 @@ void LuaRunner::loadFile(std::string file)
   }
 }
 
-void LuaRunner::setGlobal(std::string varname, int value) {
-  lua_pushinteger(state, value);
-  lua_setglobal(state, varname.c_str());
-}
-void LuaRunner::setGlobal(std::string varname, float value) {
+void LuaRunner::setGlobal(std::string varname, double value) {
   lua_pushnumber(state, value);
   lua_setglobal(state, varname.c_str());
 }
