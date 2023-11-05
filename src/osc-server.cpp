@@ -10,8 +10,8 @@ static void error_handler(int num, const char *msg, const char *path) {
 static int 
 param_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_message data, void* userData)
 {
-  auto luaRunner = (AbstractLuaRunner*) userData;
-  std::vector<AbstractLuaRunner::Param> params = {};
+  auto luaRunner = (LuaRunnerBase*) userData;
+  std::vector<LuaRunnerBase::Param> params = {};
 
   for (int i = 0; types[i] != '\0'; i++) {
     char t = types[i];

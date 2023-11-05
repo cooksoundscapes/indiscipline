@@ -1,12 +1,12 @@
 #pragma once
 #include <vector>
 
-class AbstractAudioSink {
+class AudioSinkBase {
 public:
     using AudioBuffer = std::vector<float>;
 
-    AbstractAudioSink() = default;
-    virtual ~AbstractAudioSink() = default;
+    AudioSinkBase() = default;
+    virtual ~AudioSinkBase() = default;
 
     virtual const AudioBuffer& getBuffer(int chan) const = 0;
 

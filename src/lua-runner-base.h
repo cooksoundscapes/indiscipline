@@ -3,7 +3,7 @@
 #include <lua.h>
 #include <vector>
 
-class AbstractLuaRunner
+class LuaRunnerBase
 {
 public:
   virtual void loadFile(std::string file) = 0;

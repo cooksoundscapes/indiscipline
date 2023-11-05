@@ -30,7 +30,6 @@ int main(int argc, const char** argv) {
   auto audioSink = std::make_shared<AudioSink>(10);
   #ifdef USE_GPIO
     auto panel = std::make_shared<Panel>();
-    window.setHardwarePanel(panel);
   #endif
 
   luaInterpreter->setAudioSink(audioSink);  

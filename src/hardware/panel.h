@@ -1,6 +1,5 @@
 #pragma once
 #include "pcf-8574.h"
-#include "panel-abstract.h"
 #include "gpio.h"
 #include <string>
 #include <unordered_map>
@@ -8,7 +7,7 @@
 #include <functional>
 #include <lo/lo.h>
 
-class Panel : public AbstractPanel {
+class Panel {
 	template<typename T>
 	using I2CDevices = std::unordered_map<std::string, std::shared_ptr<T>>;
 
@@ -21,7 +20,7 @@ class Panel : public AbstractPanel {
 public:
   Panel();
 
-  void read() override {
+  void read() {
     for (auto dev : inputDevices) {
       dev.second->read();
     }

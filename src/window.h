@@ -2,8 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_events.h>
-#include "lua-runner-abstract.h"
-#include "hardware/panel-abstract.h"
+#include "lua-runner-base.h"
 #include <memory>
 
 class Window {
@@ -20,8 +19,7 @@ class Window {
   void handleEvents();
   void draw();
 
-  std::shared_ptr<AbstractLuaRunner> luaInterpreter;
-  std::shared_ptr<AbstractPanel> hardwarePanel;
+  std::shared_ptr<LuaRunnerBase> luaInterpreter;
 
 public: 
   Window(int w, int h);
@@ -29,11 +27,8 @@ public:
 
   void loop();
 
-  void setLuaInterpreter(std::shared_ptr<AbstractLuaRunner> LIntr) {
+  void setLuaInterpreter(std::shared_ptr<LuaRunnerBase> LIntr) {
     this->luaInterpreter = LIntr;
-  }
-  void setHardwarePanel(std::shared_ptr<AbstractPanel> hwpan) {
-    this->hardwarePanel = hwpan;
   }
 
   void loadLuaScript(std::string file);

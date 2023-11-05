@@ -2,18 +2,18 @@
 #include <lua.hpp>
 #include <string>
 #include <memory>
-#include "lua-runner-abstract.h"
-#include "audio-sink-abstract.h"
+#include "lua-runner-base.h"
+#include "audio-sink-base.h"
 
-class LuaRunner : public AbstractLuaRunner {
+class LuaRunner : public LuaRunnerBase {
   lua_State* state;
-  std::shared_ptr<AbstractAudioSink> audioSink;
+  std::shared_ptr<AudioSinkBase> audioSink;
 
 public:
   LuaRunner();
   ~LuaRunner();
 
-  void setAudioSink(std::shared_ptr<AbstractAudioSink> audsnk) { this-> audioSink = audsnk; }
+  void setAudioSink(std::shared_ptr<AudioSinkBase> audsnk) { this-> audioSink = audsnk; }
 
   void loadFile(std::string file);
 

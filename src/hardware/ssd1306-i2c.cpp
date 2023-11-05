@@ -1,4 +1,4 @@
-#include "ssd1306.h"
+#include "ssd1306-i2c.h"
 #include <i2c/smbus.h>
 #include <string.h>
 #include <unistd.h>

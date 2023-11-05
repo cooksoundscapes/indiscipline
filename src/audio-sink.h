@@ -4,9 +4,9 @@
 #include <array>
 #include <string>
 #include <iostream>
-#include "audio-sink-abstract.h"
+#include "audio-sink-base.h"
 
-class AudioSink : public AbstractAudioSink
+class AudioSink : public AudioSinkBase
 {
 public:
     using JackPorts = std::vector<jack_port_t*>;
