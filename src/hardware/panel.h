@@ -29,10 +29,10 @@ public:
 		addDevice("encoders", std::make_shared<EncoderGroup>(0x20));
 		
     this->gpio = std::make_shared<GPIO>();
-    gpio->addController(23, {"system", buttonAction}, PI_INPUT);
-    gpio->addController(24, {"left", buttonAction}, PI_INPUT);
-    gpio->addController(25, {"right", buttonAction}, PI_INPUT);
-    gpio->addController(18, {"encoders", readDevice}, PI_INPUT);
+    gpio->addController(23, {"system", buttonAction});
+    gpio->addController(24, {"left", buttonAction});
+    gpio->addController(25, {"right", buttonAction});
+    gpio->addController(18, {"encoders", readDevice});
   }
 
   void addDevice(std::string name, std::shared_ptr<PCF8574> device) {
@@ -44,6 +44,7 @@ public:
       dev.second->read();
     }
   }
-  
-  void read(std::string name) {inputDevices[name]->read();}
+  void read(std::string name) {
+    inputDevices[name]->read();
+  }
 };
