@@ -6,38 +6,20 @@
 #include <unordered_map>
 #include <memory>
 #include <functional>
+#include <lo/lo.h>
 
 class Panel : public AbstractPanel {
-	using I2CDevices = std::unordered_map<std::string, std::shared_ptr<I2CDevice>>;
+	template<typename T>
+	using I2CDevices = std::unordered_map<std::string, std::shared_ptr<T>>;
 
-	I2CDevices inputDevices;
+	I2CDevices<PCF8574> inputDevices;
   std::shared_ptr<GPIO> gpio;
   
-  std::function<void(std::string, int)> buttonAction;
-  std::function<void(std::string, int)> readDevice;
+	lo_address addr;
+  void oscSend(std::string, int);
 
 public:
-  Panel() {
-		buttonAction = [this](std::string name, int level){
-			std::cout << "Button " << name << " is at " << level << '\n';
-		};
-		readDevice = [this](std::string device, int level){
-			if (level == 0)
-				read(device);
-		};
-		
-		addDevice("encoders", std::make_shared<EncoderGroup>(0x20));
-		
-    this->gpio = std::make_shared<GPIO>();
-    gpio->addController(23, {"system", buttonAction});
-    gpio->addController(24, {"left", buttonAction});
-    gpio->addController(25, {"right", buttonAction});
-    gpio->addController(18, {"encoders", readDevice});
-  }
-
-  void addDevice(std::string name, std::shared_ptr<PCF8574> device) {
-    inputDevices.insert({name, device});
-  }
+  Panel();
 
   void read() override {
     for (auto dev : inputDevices) {

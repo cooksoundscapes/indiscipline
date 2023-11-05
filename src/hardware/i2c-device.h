@@ -28,6 +28,4 @@ public:
 	}
 
 	virtual ~DeviceI2C() {}	
-
-	virtual void read() = 0;
 };

@@ -1,15 +1,5 @@
 #include "pcf-8574.h"
 
-void PCF8574::read() {
-  auto response = i2c_smbus_read_byte_data(file, 0xff);
-		if (response < 0) {
-			//std::cerr << "Error reading device" << '\n';
-			return;
-		}
-		auto new_state = std::bitset<8>(response);
-		state = new_state;
-}
-
 template<size_t S, typename T>
 static bool compareArrays(std::array<T, S> prev, std::array<T, S> curr)
 {
@@ -23,15 +13,18 @@ static bool compareArrays(std::array<T, S> prev, std::array<T, S> curr)
 	return equal;
 }
 
-void EncoderGroup::read() {
-	auto prevState = readEncoderData(state);
-	PCF8574::read();
-	auto currState = readEncoderData(state);
-	for (int i{0}; i < 4; i++) {
-		int direction = getRotationDirection(prevState[i], currState[i]);
-		if (direction != 0)
-			std::cout << "Encoder " << i << " turned " << direction << '\n';
+//------------------------------// 
+
+const std::array<int, 4>& EncoderGroup::read() {
+	// generate 2 arrays, before read and after read
+	auto prevState = readEncoderData(raw_state);
+	read_raw_state();
+	auto currState = readEncoderData(raw_state);
+
+	for (int i{0}; i < 4; i++) { 
+		state[i] = getRotationDirection(prevState[i], currState[i]);
 	}
+	return state;
 }
 
 std::array<int, 4> EncoderGroup::readEncoderData(const std::bitset<8>& state) {
@@ -44,12 +37,12 @@ std::array<int, 4> EncoderGroup::readEncoderData(const std::bitset<8>& state) {
 }
 
 int EncoderGroup::getRotationDirection(int previousState, int currentState) {
-    std::bitset<4> stack((previousState << 2) | currentState);
-    if (stack == cw[0] || stack == cw[1] || stack == cw[2] || stack == cw[3]) {
-        return 1; // Clockwise
-    } else if (stack == ccw[0] || stack == ccw[1] || stack == ccw[2] || stack == ccw[3]) {
-        return -1; // Counterclockwise
-    } else {
-        return 0; // No rotation
-    }
+	std::bitset<4> stack((previousState << 2) | currentState);
+	if (stack == cw[0] || stack == cw[1] || stack == cw[2] || stack == cw[3]) {
+		return 1; // Clockwise
+	} else if (stack == ccw[0] || stack == ccw[1] || stack == ccw[2] || stack == ccw[3]) {
+		return -1; // Counterclockwise
+	} else {
+		return 0; // No rotation
+	}
 }

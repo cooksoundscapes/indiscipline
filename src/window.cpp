@@ -96,11 +96,11 @@ void Window::updateWindow() {
 void Window::draw() {
   //prepare texture data
   void* rawData;
-  int pitch;
-  SDL_LockTexture(screen, NULL, &rawData, &pitch);
+  int stride;
+  SDL_LockTexture(screen, NULL, &rawData, &stride);
   auto pixels = static_cast<unsigned char*>(rawData);
 
-  Cairo::createSurfaceForData(w, h, pixels, pitch);
+  Cairo::createSurfaceForData(w, h, pixels, stride);
 
   if (luaInterpreter != nullptr)
     luaInterpreter->draw();
