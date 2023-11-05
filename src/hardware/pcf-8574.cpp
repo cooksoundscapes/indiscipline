@@ -15,7 +15,7 @@ static bool compareArrays(std::array<T, S> prev, std::array<T, S> curr)
 
 //------------------------------// 
 
-const std::array<int, 4>& EncoderGroup::read() {
+const std::vector<int>& EncoderGroup::read() {
 	// generate 2 arrays, before read and after read
 	auto prevState = readEncoderData(raw_state);
 	read_raw_state();

@@ -15,7 +15,7 @@ class Panel : public AbstractPanel {
 	I2CDevices<PCF8574> inputDevices;
   std::shared_ptr<GPIO> gpio;
   
-	lo_address addr;
+	lo_address osc_addr = lo_address_new(NULL, "7778");
   void oscSend(std::string, int);
 
 public:
@@ -26,7 +26,7 @@ public:
       dev.second->read();
     }
   }
-  void read(std::string name) {
+  const std::vector<int>& read(std::string name) {
     inputDevices[name]->read();
   }
 };
