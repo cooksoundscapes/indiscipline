@@ -2,8 +2,9 @@
 #include "lua-runner.h"
 #include "audio-sink.h"
 #include "osc-server.h"
-#include "hardware/panel.h"
-#include "hardware/pcf-8574.h"
+#ifdef USE_GPIO
+  #include "hardware/panel.h"
+#endif
 #include <iostream>
 #include <filesystem>
 #include <string>
@@ -27,11 +28,13 @@ int main(int argc, const char** argv) {
 
   auto luaInterpreter = std::make_shared<LuaRunner>();
   auto audioSink = std::make_shared<AudioSink>(10);
-  auto panel = std::make_shared<Panel>();
+  #ifdef USE_GPIO
+    auto panel = std::make_shared<Panel>();
+    window.setHardwarePanel(panel);
+  #endif
 
   luaInterpreter->setAudioSink(audioSink);  
 
-  window.setHardwarePanel(panel);
   window.setLuaInterpreter(luaInterpreter);
   oscServer.setLuaInterpreter(luaInterpreter);
 

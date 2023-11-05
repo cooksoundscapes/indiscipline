@@ -17,5 +17,5 @@ public:
   GPIO();
   ~GPIO();
 
-  void addController(int, controller, unsigned);
+  void addController(int, controller);
 };

@@ -15,11 +15,9 @@ GPIO::~GPIO() {
   gpioTerminate();
 }
 
-void GPIO::addController(int pin, controller ctrl, unsigned mode) {
-  gpioSetMode(pin, mode);
-  if (mode == PI_INPUT) {
-    gpioSetPullUpDown(pin, PI_PUD_UP);
-  }
+void GPIO::addController(int pin, controller ctrl) {
+  gpioSetMode(pin, PI_INPUT);
+  gpioSetPullUpDown(pin, PI_PUD_UP);
   gpioSetAlertFuncEx(pin, default_callback, this);
   pins.insert({pin, ctrl});
 }

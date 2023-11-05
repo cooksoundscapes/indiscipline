@@ -26,6 +26,12 @@ set(SOURCES
         src/hardware/gpio.cpp
 )
 
+#if ON, will only run in raspberry computers
+option(USE_GPIO "use gpio" ON)
+
+#will not compile with SDL and attempt to connect 
+option(USE_SSD1306_SPI "use spi display SSD1306" OFF)
+
 include_directories(hw-control-sdl /usr/include/pango-1.0)
 include_directories(hw-control-sdl /usr/include/glib-2.0)
 include_directories(hw-control-sdl /usr/lib/glib-2.0/include)
