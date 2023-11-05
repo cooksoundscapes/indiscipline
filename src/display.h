@@ -1,16 +1,18 @@
 #include "lua-runner-base.h"
+#include "hardware/ssd1306-base.h"
 #include <memory>
 #include <vector>
 
 class Display {
-  std::shared_ptr<LuaRunnerBase> luaInterpreter;
-
   int width, height;
   bool shouldQuit = false;
   std::vector<unsigned char> pixel_data;
 
-  void draw(int stride);
 
+  std::shared_ptr<LuaRunnerBase> luaInterpreter;
+  std::shared_ptr<SSD1306Base> display;
+
+  void draw(int stride);
   void measureFps();
   
 public:
@@ -21,6 +23,5 @@ public:
   }
 
   void loop();
-
   void loadLuaScript(std::string file);
 };

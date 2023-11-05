@@ -18,6 +18,8 @@ void Display::loop() {
     auto start = high_resolution_clock::now();
 		
     draw(stride);
+    if (display)
+      display->update(pixel_data);
     // call the driver to update window with pixel_data
 
     auto end = high_resolution_clock::now();

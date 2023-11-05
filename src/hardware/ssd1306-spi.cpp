@@ -42,3 +42,7 @@ SSD1306_SPI::~SSD1306_SPI() {
 void SSD1306_SPI::send_command(uint8_t c) {
   write(spi_fd, &c, 1);
 }
+
+void SSD1306_SPI::update(std::vector<unsigned char> pixels) {
+	write(spi_fd, pixels.data(), pixels.size());
+}
