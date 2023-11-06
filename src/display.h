@@ -10,13 +10,15 @@ class Display {
 
 
   std::shared_ptr<LuaRunnerBase> luaInterpreter;
-  std::shared_ptr<SSD1306Base> display;
+  std::shared_ptr<SSD1306Base> device;
 
   void draw(int stride);
   void measureFps();
   
 public:
   Display(int w, int h) : width(w), height(h) {}
+  
+  void setDevice(std::shared_ptr<SSD1306Base> device) {this->device = device;}
   
   void setLuaInterpreter(std::shared_ptr<LuaRunnerBase> LIntr) {
     this->luaInterpreter = LIntr;

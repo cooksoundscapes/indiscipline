@@ -9,7 +9,7 @@ SSD1306_SPI::SSD1306_SPI() {
     std::cerr << "Failed to open SPI device." << std::endl;
     exit(1);
   }
-  send_command(SSD1306_DISPLAYOFF);
+  /*send_command(SSD1306_DISPLAYOFF);
 	send_command(SSD1306_SETDISPLAYCLOCKDIV);
 	send_command(0x80);
 	send_command(SSD1306_SETMULTIPLEX);
@@ -31,8 +31,16 @@ SSD1306_SPI::SSD1306_SPI() {
 	send_command(SSD1306_PRE_CHARGE_PERIOD);
 	send_command(0xA4);
 	send_command(SSD1306_NORMALDISPLAY);
-	send_command(SSD1306_DEACTIVATE_SCROLL);
+	send_command(SSD1306_DEACTIVATE_SCROLL);*/
 	send_command(SSD1306_DISPLAYON);
+	
+	std::cout << "OK!!!\n";
+	
+	int a{0x40}, b{0xFF};
+	for (int i{0}; i < B_SIZE; i++) {
+		write(spi_fd, &a, 1);
+		write(spi_fd, &b, 1);
+	}
 }
 
 SSD1306_SPI::~SSD1306_SPI() {

@@ -10,7 +10,7 @@ Panel::Panel() {
 
 	GPIO::InputCallback readI2CDevice = [this](std::string device, int level){
 		if (level == 0) {
-			auto levels = read(device);
+			auto levels = inputDevices[device]->read();
 			size_t i{0};
 			for (auto l : levels) {
 				i++;

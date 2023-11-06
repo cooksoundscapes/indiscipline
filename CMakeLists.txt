@@ -22,15 +22,18 @@ set(SOURCES
         src/cairo-wrapper.cpp
         src/audio-sink.cpp
         src/osc-server.cpp
+        src/display.cpp
+        src/hardware/panel.cpp
         src/hardware/pcf-8574.cpp
         src/hardware/gpio.cpp
+        src/hardware/ssd1306-spi.cpp
 )
 
 #if ON, will only run in raspberry computers
 option(USE_GPIO "use gpio" ON)
 
 #will not compile with SDL and attempt to connect 
-option(USE_SSD1306_SPI "use spi display SSD1306" OFF)
+#option(USE_SSD1306_SPI "use spi display SSD1306" OFF)
 
 include_directories(hw-control-sdl /usr/include/pango-1.0)
 include_directories(hw-control-sdl /usr/include/glib-2.0)

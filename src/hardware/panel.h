@@ -19,13 +19,4 @@ class Panel {
 
 public:
   Panel();
-
-  void read() {
-    for (auto dev : inputDevices) {
-      dev.second->read();
-    }
-  }
-  const std::vector<int>& read(std::string name) {
-    inputDevices[name]->read();
-  }
 };
