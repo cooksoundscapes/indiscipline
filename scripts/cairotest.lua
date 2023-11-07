@@ -44,7 +44,7 @@ function Draw()
   FPS_FRAME = (FPS_FRAME + 1) % FPS_THROTTLE
 
   move_to(0, h(0.5))
-  set_line_width(2)
+  set_line_width(1)
   local b = get_audio_buffer(caller, 1)
   for i,n in ipairs(b) do
     line_to(i, n*h(0.5) + h(0.5))
