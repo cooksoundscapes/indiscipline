@@ -1,5 +1,6 @@
 #include "gpio.h"
 #include <iostream>
+#include <pigpio.h>
 
 GPIO::GPIO() {
   if (gpioInitialise() < 0) {
@@ -22,8 +23,16 @@ void GPIO::addController(int pin, controller ctrl) {
   pins.insert({pin, ctrl});
 }
 
-void GPIO::default_callback(int pin, int level, uint32_t tick, void* userData) {
+void GPIO::default_callback(int pin, unsigned level, uint32_t tick, void* userData) {
   auto gpio = (GPIO*)userData;
   auto& ctrl = gpio->pins[pin];
   ctrl.action(ctrl.name, level);
+}
+
+void GPIO::setPin(int pin, unsigned level) {
+	gpioWrite(pin, level);
+}
+
+void GPIO::initOutputPin(int pin) {
+	gpioSetMode(pin, PI_OUTPUT);
 }

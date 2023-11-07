@@ -44,7 +44,7 @@ void SSD1306::sendCommand(uint8_t command)
 
 void SSD1306::sendData(DisplayData data) {
 	for (int i{0}; i < B_SIZE; i++) {
-		i2c_smbus_write_byte_data(file, 0x40, data[i]);
+			(file, 0x40, data[i]);
 	}
 }
 

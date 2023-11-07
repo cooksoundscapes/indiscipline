@@ -1,14 +1,16 @@
 #include "panel.h"
 
-Panel::Panel() {
+Panel::Panel(std::shared_ptr<GPIOBase> gpio)
+: gpio{gpio}
+{
 	inputDevices.insert({"encoders", std::make_shared<EncoderGroup>(0x20)});
 	
 	// define callback lambdas
-	GPIO::InputCallback buttonAction = [this](std::string name, int level){
+	GPIOBase::InputCallback buttonAction = [this](std::string name, int level){
 		oscSend(name, level);
 	};
 
-	GPIO::InputCallback readI2CDevice = [this](std::string device, int level){
+	GPIOBase::InputCallback readI2CDevice = [this](std::string device, int level){
 		if (level == 0) {
 			auto levels = inputDevices[device]->read();
 			size_t i{0};
@@ -19,8 +21,7 @@ Panel::Panel() {
 			}
 		}
 	};
-			
-  this->gpio = std::make_shared<GPIO>();
+
   gpio->addController(23, {"system", buttonAction});
   gpio->addController(24, {"left", buttonAction});
   gpio->addController(25, {"right", buttonAction});

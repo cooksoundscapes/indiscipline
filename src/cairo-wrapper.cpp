@@ -6,6 +6,9 @@
 cairo_t* Cairo::cr = nullptr;
 cairo_surface_t* Cairo::surface = nullptr;
 
+int Cairo::getStrideForWidth_A1(int width) {
+  return cairo_format_stride_for_width(CAIRO_FORMAT_A1, width);
+}
 int Cairo::getStrideForWidth_A8(int width) {
   return cairo_format_stride_for_width(CAIRO_FORMAT_A8, width);
 }
@@ -21,6 +24,9 @@ void Cairo::createSurfaceForData(int w, int h, unsigned char* pixels, int stride
 }
 void Cairo::createSurfaceForData_ARGB32(int w, int h, unsigned char* pixels, int stride) {
   createSurfaceForData(w, h, pixels, stride, CAIRO_FORMAT_ARGB32);
+}
+void Cairo::createSurfaceForData_A1(int w, int h, unsigned char* pixels, int stride) {
+  createSurfaceForData(w, h, pixels, stride, CAIRO_FORMAT_A1);
 }
 void Cairo::createSurfaceForData_A8(int w, int h, unsigned char* pixels, int stride) {
   createSurfaceForData(w, h, pixels, stride, CAIRO_FORMAT_A8);
@@ -40,6 +46,9 @@ void Cairo::flush() {
 void Cairo::set_source_rgb(double r, double g, double b) {
   cairo_set_source_rgb(cr, r, g, b);
 } 
+void Cairo::set_source_rgba(double r, double g, double b, double a) {
+  cairo_set_source_rgba(cr, r, g, b, a);
+}
 void Cairo::rectangle(double x, double y, double w, double h) {
   cairo_rectangle(cr, x, y, w, h);
 }

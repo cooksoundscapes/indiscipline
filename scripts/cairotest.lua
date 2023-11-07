@@ -2,7 +2,8 @@ local color = {
   red = {hex("#ff0000")},
   blue = {hex("#0000ff")},
   green = {hex("#00ff00")},
-  white = {hex("#ffffff")}
+  white = {hex("#ffffff")},
+  black = {hex("#000000")}
 }
 local function set_color(rgb_table)
   set_source_rgb(table.unpack(rgb_table))
@@ -26,19 +27,19 @@ FPS_FRAME = 0
 FPS = 0
 
 function Draw()
-  set_color(color.blue)
-  paint()
+  --set_color(color.black)
+  --paint()
 
   set_color(color.white)
   move_to(0, 0)
-  text(".::ANY_UI::.", 16, 0, 0)
+  text(".::ANY_UI::.", 10, 0, 0)
 
   if fps ~= nil then
     if FPS_FRAME == 0 then
       FPS = fps
     end
     move_to(0, 18)
-    text(FPS .. " fps", 16, 0, 0)
+    text(FPS .. " fps", 10, 0, 0)
   end
   FPS_FRAME = (FPS_FRAME + 1) % FPS_THROTTLE
 

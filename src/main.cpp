@@ -5,15 +5,26 @@
 #include "display.h"
 #include "hardware/panel.h"
 #include "hardware/ssd1306-spi.h"
+#include "hardware/gpio.h"
 #include <iostream>
 #include <filesystem>
 #include <string>
+#include <csignal>
 
 constexpr int WINDOW_WIDTH = 320;
 constexpr int WINDOW_HEIGHT = 240;
 constexpr int OLED_DISPLAY_WIDTH = 128;
 constexpr int OLED_DISPLAY_HEIGHT = 64;
 
+// define main graphics driver globally
+//Window window(WINDOW_WIDTH, WINDOW_HEIGHT);
+Display display(OLED_DISPLAY_WIDTH, OLED_DISPLAY_HEIGHT);
+
+void signalHandler(int signal) {
+  if (signal == SIGINT) {
+    display.stop();
+  }
+}
 
 int main(int argc, const char** argv) {
 	// setup hardcoded lua scripts path
@@ -25,16 +36,15 @@ int main(int argc, const char** argv) {
   std::filesystem::path currentPath = std::filesystem::current_path();
   std::string scriptsDir = currentPath.parent_path().string() + "/scripts/";
   std::cout << scriptsDir << '\n';
-
-	// define main graphics driver
-  //Window window(WINDOW_WIDTH, WINDOW_HEIGHT);
-  Display display(OLED_DISPLAY_WIDTH, OLED_DISPLAY_HEIGHT);
-  auto displayDevice = std::make_shared<SSD1306_SPI>();
-  display.setDevice(displayDevice);
   
-  // initialize hardware panel and osc server
-  Panel panel;
+  // initialize GPIOs, hardware panel and osc server
+  auto gpio = std::make_shared<GPIO>();
+  Panel panel(gpio);
   OscServer oscServer;
+
+  // setup display device
+  auto displayDevice = std::make_shared<SSD1306_SPI>(gpio);
+  display.setDevice(displayDevice);
   
   // setup shared objects for lua and audio
   auto luaInterpreter = std::make_shared<LuaRunner>();
@@ -52,8 +62,12 @@ int main(int argc, const char** argv) {
   //window.loadLuaScript(scriptsDir + filename);
   display.loadLuaScript(scriptsDir + filename);
 
+  signal(SIGINT, signalHandler);
+
 	// start osc server and main loop
   oscServer.init();
   //window.loop();
   display.loop();
+  
+  return 0;
 }

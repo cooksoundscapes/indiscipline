@@ -2,12 +2,12 @@
 #include "hardware/ssd1306-base.h"
 #include <memory>
 #include <vector>
+#include <iostream>
 
 class Display {
   int width, height;
   bool shouldQuit = false;
-  std::vector<unsigned char> pixel_data;
-
+  std::vector<uint8_t> pixel_data;
 
   std::shared_ptr<LuaRunnerBase> luaInterpreter;
   std::shared_ptr<SSD1306Base> device;
@@ -22,6 +22,11 @@ public:
   
   void setLuaInterpreter(std::shared_ptr<LuaRunnerBase> LIntr) {
     this->luaInterpreter = LIntr;
+  }
+
+  void stop() {
+    std::cout << "bOOOOHBYE\n";
+    shouldQuit = true;
   }
 
   void loop();

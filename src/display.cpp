@@ -7,7 +7,7 @@ using namespace std::chrono;
 
 void Display::loop() {
   // setup FPS
-  int targetFps = 30;
+  int targetFps = 60;
   milliseconds frameDuration(1000 / targetFps);
 
   // prepare pixel data allocation
@@ -18,8 +18,8 @@ void Display::loop() {
     auto start = high_resolution_clock::now();
 		
     draw(stride);
-    /*if (device)
-      device->update(pixel_data);*/
+    if (device)
+      device->update(pixel_data);
 
     auto end = high_resolution_clock::now();
     auto elapsed = duration_cast<milliseconds>(end - start);
@@ -27,10 +27,12 @@ void Display::loop() {
     if (elapsed < frameDuration) {
       std::this_thread::sleep_for(frameDuration - elapsed);
     }
-    measureFps();
   }
 }
 
+/**
+ * @deprecated (almost)
+*/
 void Display::measureFps() {
   static int frameCount = 0;
   static auto lastSecond = high_resolution_clock::now();
@@ -47,9 +49,10 @@ void Display::measureFps() {
 }
 
 void Display::draw(int stride) {
+  pixel_data.assign(pixel_data.size(), 0);
   Cairo::createSurfaceForData_A8(
     width, height,
-    reinterpret_cast<unsigned char*>(pixel_data.data()),
+    pixel_data.data(),
     stride
   );
   if (luaInterpreter != nullptr)

@@ -78,10 +78,12 @@
     "typeinfo": "cpp",
     "valarray": "cpp",
     "variant": "cpp",
-    "filesystem": "cpp"
+    "filesystem": "cpp",
+    "csignal": "cpp"
   },
   "Lua.diagnostics.globals": [
     "set_source_rgb",
+    "set_source_rgba",
     "set_line_width",
     "rectangle",
     "arc",

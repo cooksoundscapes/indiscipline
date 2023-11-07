@@ -21,6 +21,17 @@ int _set_source_rgb(lua_State* l) {
   return 0;
 }
 
+int _set_source_rgba(lua_State* l) { 
+  lua_check_num_args(l, 4);
+  double r = luaL_checknumber(l, 1);
+  double g = luaL_checknumber(l, 2);
+  double b = luaL_checknumber(l, 3);
+  double a = luaL_checknumber(l, 4);
+  Cairo::set_source_rgba(r, g, b, a);
+  lua_settop(l, 0);
+  return 0;
+}
+
 int _rectangle(lua_State* l) {
   lua_check_num_args(l, 4);
   double x = luaL_checknumber(l, 1);
@@ -156,6 +167,7 @@ LuaRunner::LuaRunner() {
   lua_setglobal(state, "caller");
 
   loadFunction("set_source_rgb", &_set_source_rgb);
+  loadFunction("set_source_rgba", &_set_source_rgba);
   loadFunction("rectangle", &_rectangle);
   loadFunction("arc", &_arc);
   loadFunction("move_to", &_move_to);

@@ -1,23 +1,22 @@
 #pragma once
+#include "gpio-base.h"
 #include <unordered_map>
-#include <string>
-#include <functional>
-#include <pigpio.h>
+#include <iostream>
 
-class GPIO{
+class GPIO : public GPIOBase {
 public:
   GPIO();
   ~GPIO();
   
-	using InputCallback = std::function<void(std::string name, int level)>;
-	
-  struct controller {
-		std::string name;
-		InputCallback action;
-	};
-  void addController(int, controller);
+  void addController(int, controller) override;
+  void setPin(int pin, unsigned level) override;
 
 private:
+	int daemon;
+	std::vector<int> callback_ids;
+
   std::unordered_map<int, controller> pins;
-  static void default_callback(int pin, int level, uint32_t tick, void* userData);
+ 
+  //static void default_callback(int pin, int level, uint32_t tick, void* userData);
+  static void default_callback(int daemon, unsigned int pin, unsigned int level, unsigned int tick, void* userData);
 };

@@ -25,7 +25,8 @@ set(SOURCES
         src/display.cpp
         src/hardware/panel.cpp
         src/hardware/pcf-8574.cpp
-        src/hardware/gpio.cpp
+        #src/hardware/gpio.cpp
+        src/hardware/gpio-daemon.cpp
         src/hardware/ssd1306-spi.cpp
 )
 
@@ -49,6 +50,7 @@ target_link_libraries(hw-control-sdl
         jack
         i2c
         pigpio
+        pigpiod_if2
         rt
         lo
         lua
