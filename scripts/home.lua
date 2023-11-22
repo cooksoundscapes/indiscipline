@@ -23,6 +23,7 @@ local font = "Sans"
 local fontSize = 10
 
 function Draw()
+  set_source_rgb(1, 1, 1)
   for i,entry in ipairs(menu.entries) do
     move_to(0, (i - 1) * 16)
     if menu.selected == i then

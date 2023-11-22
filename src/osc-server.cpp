@@ -20,6 +20,23 @@ navigate_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_m
 }
 
 static int 
+direct_input_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_message data, void* userData)
+{
+  auto luaRunner = (LuaRunnerBase*) userData;
+  std::vector<LuaRunnerBase::Param> params = {};
+
+  const char* device = &argv[0]->s;
+  float pin = argv[1]->f;
+  float value = argv[2]->f;
+  params.push_back({'s', 0, device});
+  params.push_back({'f', pin, ""});
+  params.push_back({'f', value, ""});
+
+  luaRunner->callFunction(PANEL_INPUT, params);
+  return 0;
+}
+
+static int 
 param_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_message data, void* userData)
 {
   auto luaRunner = (LuaRunnerBase*) userData;
@@ -71,6 +88,7 @@ void OscServer::init() {
   lo_server_thread_add_method(thread, "/navigate", "s", navigate_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/param", NULL, param_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/buffer", NULL, buffer_handler, luaRunner.get());
+  lo_server_thread_add_method(thread, "/panel", "sff", buffer_handler, luaRunner.get());
 
   // server start
   lo_server_thread_start(thread);

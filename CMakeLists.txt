@@ -31,8 +31,17 @@ set(SOURCES
         src/hardware/ssd1306-spi.cpp
 )
 
-#if ON, will only run in raspberry computers
 option(USE_GPIO "use gpio" ON)
+option(USE_SSD1306_SPI "use spi display" ON)
+
+# reminder: -U disables it, -D enables it (define and undefine)
+if (USE_GPIO)
+    add_definitions(-DUSE_GPIO)
+endif()
+if (USE_SSD1306)
+    add_definitions(-DUSE_SSD1306)
+endif()
+
 
 #will not compile with SDL and attempt to connect 
 #option(USE_SSD1306_SPI "use spi display SSD1306" OFF)

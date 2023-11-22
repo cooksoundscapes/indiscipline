@@ -162,6 +162,8 @@ void LuaRunner::setTable(std::string name, std::vector<float>& buff)
 
 void LuaRunner::setCurrentPage(std::string page) {
   currentPage = page;
+  if (!panel) return;
+
   if (page == HOME_PAGE && panel) {
     panel->setCurrentCallback(DIRECT_CONTROL);
   } else if (panel) {
