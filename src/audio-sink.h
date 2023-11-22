@@ -24,7 +24,7 @@ public:
         return err;
     }
 
-    int getBuffSize() {return (int)bufferSize;};
+    int getBufferSize() {return (int)bufferSize;};
     void connect();
 
 private:

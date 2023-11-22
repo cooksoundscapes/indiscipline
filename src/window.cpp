@@ -107,6 +107,7 @@ void Window::draw() {
 
   //end drawing
   SDL_UnlockTexture(screen);
+  Cairo::flush();
   Cairo::finalize();
 }
 

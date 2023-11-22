@@ -31,6 +31,7 @@ LuaRunner::LuaRunner() {
   loadFunction("destroy_surface", &_destroy_surface);
   loadFunction("hex", &hexToRGB);
   loadFunction("get_audio_buffer", &LuaRunner::getAudioBuffer);
+  loadFunction("get_buffer_size", &LuaRunner::getBufferSize);
   loadFunction("load_module", &LuaRunner::loadModule);
 }
 

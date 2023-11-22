@@ -14,6 +14,13 @@ constexpr int WINDOW_HEIGHT = 240;
 constexpr int OLED_DISPLAY_WIDTH = 128;
 constexpr int OLED_DISPLAY_HEIGHT = 64;
 
+constexpr const char* DEFAULT_FONT = "Sans";
+#ifdef USE_SSD1306
+  constexpr int FONT_SIZE = 10;
+#else
+  constexpr int FONT_SIZE = 16;
+#endif
+
 //--------------- LUA GLOBALS-----------------------//
 constexpr const char* SCREEN_W = "screen_w";
 constexpr const char* SCREEN_H = "screen_h";

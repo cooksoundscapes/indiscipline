@@ -119,8 +119,8 @@ int _text(lua_State* l) {
   Cairo::TextParams params;
 
   const char* txt = luaL_checkstring(l, 1);
-  double size = luaL_optnumber(l, 2, params.size);
-  const char* font = luaL_optstring(l, 3, params.font);
+  double size = luaL_optnumber(l, 2, FONT_SIZE);
+  const char* font = luaL_optstring(l, 3, DEFAULT_FONT);
   double width = luaL_optnumber(l, 4, 0);
   bool centered = luaL_optnumber(l, 5, 0);
 
@@ -190,6 +190,15 @@ int LuaRunner::getAudioBuffer(lua_State* l) {
       lua_rawseti(l, -2, i + 1);
     }
   }
+  return 1;
+}
+
+int LuaRunner::getBufferSize(lua_State* l) {
+  lua_check_num_args(l, 1);
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, 1));
+
+  int b_size = luaRunner->audioSink->getBufferSize();
+  lua_pushnumber(l, b_size);
   return 1;
 }
 

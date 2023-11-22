@@ -65,4 +65,5 @@ public:
   // registerable lua function with private access
   static int getAudioBuffer(lua_State*);
   static int loadModule(lua_State*);
+  static int getBufferSize(lua_State*);
 };

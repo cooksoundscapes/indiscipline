@@ -56,8 +56,15 @@ int main() {
   auto luaInterpreter = std::make_shared<LuaRunner>();
   auto audioSink = std::make_shared<AudioSink>(A_CHANNELS);
   luaInterpreter->setAudioSink(audioSink);
-  luaInterpreter->setGlobal(SCREEN_W, OLED_DISPLAY_WIDTH);
-  luaInterpreter->setGlobal(SCREEN_H, OLED_DISPLAY_HEIGHT);
+
+  #ifdef USE_SSD1306
+    luaInterpreter->setGlobal(SCREEN_W, OLED_DISPLAY_WIDTH);
+    luaInterpreter->setGlobal(SCREEN_H, OLED_DISPLAY_HEIGHT);
+  #else
+    luaInterpreter->setGlobal(SCREEN_W, WINDOW_WIDTH);
+    luaInterpreter->setGlobal(SCREEN_H, WINDOW_HEIGHT);
+  #endif
+
   #ifdef USE_GPIO
     luaInterpreter->setPanel(panel);
   #endif

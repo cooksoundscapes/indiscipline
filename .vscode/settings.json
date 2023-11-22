@@ -99,6 +99,7 @@
     "screen_h",
     "app",
     "get_audio_buffer",
+    "get_buffer_size",
     "hex",
     "fps",
     "load_module",
