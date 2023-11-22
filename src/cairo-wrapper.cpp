@@ -5,6 +5,8 @@
 
 cairo_t* Cairo::cr = nullptr;
 cairo_surface_t* Cairo::surface = nullptr;
+_cairo_format Cairo::defaultFormat = CAIRO_FORMAT_A8;
+std::unordered_map<std::string, cairo_surface_t*> Cairo::extraSurfaces;
 
 int Cairo::getStrideForWidth_A1(int width) {
   return cairo_format_stride_for_width(CAIRO_FORMAT_A1, width);
@@ -43,6 +45,14 @@ void Cairo::flush() {
   cairo_surface_flush(surface);
 }
 
+void Cairo::clearExtraSurfaces() {
+  for (auto entry : extraSurfaces) {
+    if (entry.second) 
+      cairo_surface_destroy(entry.second);
+    extraSurfaces.erase(entry.first);
+  }
+}
+
 void Cairo::set_source_rgb(double r, double g, double b) {
   cairo_set_source_rgb(cr, r, g, b);
 } 
@@ -70,7 +80,6 @@ void  Cairo::rel_line_to(double x, double y) {
 void Cairo::set_line_width(double w) {
   cairo_set_line_width(cr, w);
 }
-
 void Cairo::paint() {
   cairo_paint(cr);
 }
@@ -81,12 +90,19 @@ void Cairo::stroke() {
   cairo_stroke(cr);
 }
 
-void Cairo::text(const char* text, double size, double width, bool centered)
+void Cairo::text(TextParams& params)
 {
-  PangoLayout* layout = pango_cairo_create_layout(cr);
-  pango_layout_set_text(layout, text, -1);
+  // should optimize view in OLED display, verify if it's needed in fbdev
+  cairo_font_options_t *options = cairo_font_options_create();
+  cairo_font_options_set_antialias(options, CAIRO_ANTIALIAS_NONE);
+  cairo_set_font_options(cr, options);
+  cairo_font_options_destroy(options);
+  //-----------------------
 
-  std::string font = "Sans " + std::to_string(size);
+  PangoLayout* layout = pango_cairo_create_layout(cr);
+  pango_layout_set_text(layout, params.text, -1);
+
+  std::string font = std::string(params.font) + " " + std::to_string(params.size);
   PangoFontDescription* desc = pango_font_description_from_string(font.c_str());
   pango_layout_set_font_description(layout, desc);
   pango_font_description_free(desc);
@@ -94,15 +110,46 @@ void Cairo::text(const char* text, double size, double width, bool centered)
   int off_x{0}, txt_size, txt_height;
   pango_layout_get_size(layout, &txt_size, &txt_height);
 
-  if (centered) {
-    off_x = width/2 - txt_size/PANGO_SCALE/2;
-    cairo_rel_move_to(cr, off_x, 0);  
+  if (params.centered) {
+    off_x = params.width/2 - txt_size/PANGO_SCALE/2;
+    cairo_rel_move_to(cr, off_x, 0);
   }
-  if (width > 0) {
+  if (params.width > 0) {
     pango_layout_set_ellipsize(layout, PANGO_ELLIPSIZE_END);
-    pango_layout_set_width(layout, (int)(width*PANGO_SCALE));  
+    pango_layout_set_width(layout, (int)(params.width*PANGO_SCALE));  
   }
   pango_cairo_show_layout(cr, layout);
 
   g_object_unref(layout);
+}
+
+void Cairo::createAdditionalSurface(std::string name, double w, double h) {
+  auto it = extraSurfaces.find(name);
+  if (it != extraSurfaces.end()) {
+    destroySurface(name);
+  }
+
+  extraSurfaces.insert({
+    name,
+    cairo_image_surface_create(defaultFormat, w, h)
+  });
+  cr = cairo_create(extraSurfaces[name]);
+  cairo_close_path(cr);
+}
+
+void Cairo::drawSurface(std::string name, double x, double y)
+{
+  auto it = extraSurfaces.find(name);
+  if (it == extraSurfaces.end()) return;
+
+  cairo_set_source_surface(cr, extraSurfaces[name], x, y);
+  cairo_paint(cr);
+}
+
+void Cairo::destroySurface(std::string name) {
+  auto it = extraSurfaces.find(name);
+  if (it == extraSurfaces.end()) return;
+
+  cairo_surface_destroy(extraSurfaces[name]);
+  extraSurfaces.erase(name);
 }

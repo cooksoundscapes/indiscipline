@@ -20,7 +20,10 @@ protected:
 	}
 
 public:
-	PCF8574(int addr, size_t s): DeviceI2C(addr) { state.resize(s); }
+	PCF8574(int addr, size_t s): DeviceI2C(addr) { 
+		state.resize(s);
+		i2c_smbus_write_byte(file, 0xff);
+	}
 	
 	~PCF8574() {}
 
@@ -41,3 +44,10 @@ public:
 
   const std::vector<int>& read() override;
 }; 
+
+class ButtonArray : public PCF8574 {
+public:
+	ButtonArray(int addr) : PCF8574(addr, 8) {}
+
+	const std::vector<int>& read() override;
+};

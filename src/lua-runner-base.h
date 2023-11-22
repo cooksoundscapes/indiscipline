@@ -15,5 +15,6 @@ public:
     float f_value;
     const char* s_value;
   };
-  virtual void callFunction(std::string name, std::vector<Param> params) = 0;
+  virtual void callFunction(std::string, std::vector<Param>&) = 0;
+  virtual void setTable(std::string, std::vector<float>&) = 0;
 };

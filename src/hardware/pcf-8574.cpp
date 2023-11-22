@@ -46,3 +46,20 @@ int EncoderGroup::getRotationDirection(int previousState, int currentState) {
 		return 0; // No rotation
 	}
 }
+
+//--------------------------------------------------//
+
+const std::vector<int>& ButtonArray::read() {
+	auto prev_state = raw_state;
+	read_raw_state();
+	auto diff = prev_state ^ raw_state; // XOR: 1 when change happened
+
+	for (int i = 0; i < diff.size(); ++i) {
+		if (diff.test(i)) {
+			state[i] = raw_state[i] == 1 ? 1 : -1;
+		} else {
+			state[i] = 0;
+		}
+	}
+	return state;
+}

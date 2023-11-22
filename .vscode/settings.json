@@ -97,9 +97,14 @@
     "stroke",
     "screen_w",
     "screen_h",
-    "caller",
+    "app",
     "get_audio_buffer",
     "hex",
-    "fps"
+    "fps",
+    "load_module",
+    "create_surface",
+    "finish_surface",
+    "draw_surface",
+    "destroy_surface"
   ]
 }

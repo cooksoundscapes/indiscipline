@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "../main.h"
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <array>
@@ -15,10 +16,10 @@ protected:
 
 public:
 	DeviceI2C(int address) {
-		std::string filename{"/dev/i2c-1"};
+		std::string filename{I2C_DEVICE};
 		file = open(filename.c_str(), O_RDWR);
 		if (file < 0) {
-			std::cout << "Error opening i2c device 1\n";
+			std::cout << "Error opening i2c device\n";
 			return;
 		}
 		if (ioctl(file, I2C_SLAVE, address) < 0) {

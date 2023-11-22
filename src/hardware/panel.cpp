@@ -4,31 +4,28 @@ Panel::Panel(std::shared_ptr<GPIOBase> gpio)
 : gpio{gpio}
 {
 	inputDevices.insert({"encoders", std::make_shared<EncoderGroup>(0x20)});
+	inputDevices.insert({"buttons", std::make_shared<ButtonArray>(0x21)});
 	
 	// define callback lambdas
-	GPIOBase::InputCallback buttonAction = [this](std::string name, int level){
-		oscSend(name, level);
-	};
-
 	GPIOBase::InputCallback readI2CDevice = [this](std::string device, int level){
 		if (level == 0) {
 			auto levels = inputDevices[device]->read();
 			size_t i{0};
 			for (auto l : levels) {
 				i++;
-				if (l != 0)
-					oscSend(device + "/" + std::to_string(i), l);
+				if (l != 0 && currentCallback)
+					(*currentCallback)(device , i, l);
 			}
 		}
 	};
-
-  gpio->addController(23, {"system", buttonAction});
-  gpio->addController(24, {"left", buttonAction});
-  gpio->addController(25, {"right", buttonAction});
-  gpio->addController(18, {"encoders", readI2CDevice});
+	// setup I2C devices to their INT pins
+  gpio->addController(ENCODER_INT, {"encoders", readI2CDevice});
+	gpio->addController(BUTTON_INT, {"buttons", readI2CDevice});
 }
 
-void Panel::oscSend(std::string path, int value) {
-	lo_send(osc_addr, path.c_str(), "f", (float)value);
+void Panel::setCurrentCallback(std::string cb) {
+	auto it = callbacks.find(cb);
+	if (it != callbacks.end()) {
+		currentCallback = std::make_unique<ReadCB>(callbacks[cb]);
+	}
 }
-

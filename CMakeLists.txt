@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+        cmake_minimum_required(VERSION 3.0)
 project(hw-control-sdl
         VERSION 1.0
         DESCRIPTION "minimalistic front end & hardware interface"
@@ -11,13 +11,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
 #debugging
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 set(SOURCES
         src/main.cpp
         src/window.cpp
+        src/lua-functions.cpp
         src/lua-runner.cpp
         src/cairo-wrapper.cpp
         src/audio-sink.cpp
