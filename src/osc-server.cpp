@@ -33,6 +33,7 @@ direct_input_handler(const char* p, const char* types, lo_arg** argv, int argc, 
   params.push_back({'f', value, ""});
 
   luaRunner->callFunction(PANEL_INPUT, params);
+
   return 0;
 }
 
@@ -88,7 +89,7 @@ void OscServer::init() {
   lo_server_thread_add_method(thread, "/navigate", "s", navigate_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/param", NULL, param_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/buffer", NULL, buffer_handler, luaRunner.get());
-  lo_server_thread_add_method(thread, "/panel", "sff", buffer_handler, luaRunner.get());
+  lo_server_thread_add_method(thread, "/panel", "sff", direct_input_handler, luaRunner.get());
 
   // server start
   lo_server_thread_start(thread);

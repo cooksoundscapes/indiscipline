@@ -5,33 +5,27 @@
 
 cairo_t* Cairo::cr = nullptr;
 cairo_surface_t* Cairo::surface = nullptr;
-_cairo_format Cairo::defaultFormat = CAIRO_FORMAT_A8;
+
+#ifdef USE_SSD1306
+  _cairo_format Cairo::defaultFormat = CAIRO_FORMAT_A8;
+#else
+  _cairo_format Cairo::defaultFormat = CAIRO_FORMAT_ARGB32;
+#endif
+
 std::unordered_map<std::string, cairo_surface_t*> Cairo::extraSurfaces;
 
-int Cairo::getStrideForWidth_A1(int width) {
-  return cairo_format_stride_for_width(CAIRO_FORMAT_A1, width);
-}
-int Cairo::getStrideForWidth_A8(int width) {
-  return cairo_format_stride_for_width(CAIRO_FORMAT_A8, width);
+int Cairo::getStrideForWidth(int width) {
+  return cairo_format_stride_for_width(defaultFormat, width);
 }
 
-void Cairo::createSurfaceForData(int w, int h, unsigned char* pixels, int stride, cairo_format_t format)
+void Cairo::createSurfaceForData(int w, int h, unsigned char* pixels, int stride)
 {
   surface = cairo_image_surface_create_for_data(
     pixels,
-    format,
+    defaultFormat,
     w, h, stride
   );
   cr = cairo_create(surface);
-}
-void Cairo::createSurfaceForData_ARGB32(int w, int h, unsigned char* pixels, int stride) {
-  createSurfaceForData(w, h, pixels, stride, CAIRO_FORMAT_ARGB32);
-}
-void Cairo::createSurfaceForData_A1(int w, int h, unsigned char* pixels, int stride) {
-  createSurfaceForData(w, h, pixels, stride, CAIRO_FORMAT_A1);
-}
-void Cairo::createSurfaceForData_A8(int w, int h, unsigned char* pixels, int stride) {
-  createSurfaceForData(w, h, pixels, stride, CAIRO_FORMAT_A8);
 }
 
 void Cairo::finalize() {

@@ -26,7 +26,7 @@ public:
   ~Window();
 
   void loop();
-  void stop() {}
+  void stop() {shouldQuit = true; }
 
   void setLuaInterpreter(std::shared_ptr<LuaRunnerBase> LIntr) {
     this->luaInterpreter = LIntr;

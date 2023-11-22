@@ -11,7 +11,7 @@ void Display::loop() {
   milliseconds frameDuration(1000 / targetFps);
 
   // prepare pixel data allocation
-  int stride = Cairo::getStrideForWidth_A8(width);
+  int stride = Cairo::getStrideForWidth(width);
   pixel_data.resize(stride * height);
     
   while (!shouldQuit) {
@@ -50,7 +50,7 @@ void Display::measureFps() {
 
 void Display::draw(int stride) {
   pixel_data.assign(pixel_data.size(), 0);
-  Cairo::createSurfaceForData_A8(
+  Cairo::createSurfaceForData(
     width, height,
     pixel_data.data(),
     stride

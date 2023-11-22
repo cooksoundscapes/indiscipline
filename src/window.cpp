@@ -100,7 +100,7 @@ void Window::draw() {
   SDL_LockTexture(screen, NULL, &rawData, &stride);
   auto pixels = static_cast<unsigned char*>(rawData);
 
-  Cairo::createSurfaceForData_ARGB32(w, h, pixels, stride);
+  Cairo::createSurfaceForData(w, h, pixels, stride);
 
   if (luaInterpreter != nullptr)
     luaInterpreter->draw();

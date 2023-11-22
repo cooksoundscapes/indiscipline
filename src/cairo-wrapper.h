@@ -9,12 +9,8 @@ namespace Cairo {
   extern std::unordered_map<std::string, cairo_surface_t*> extraSurfaces;
   extern _cairo_format defaultFormat;
 
-  extern int getStrideForWidth_A1(int w);
-  extern int getStrideForWidth_A8(int w);
-  extern void createSurfaceForData(int w, int h, unsigned char* pixels, int stride, cairo_format_t format);
-  extern void createSurfaceForData_ARGB32(int w, int h, unsigned char* pixels, int stride);
-  extern void createSurfaceForData_A1(int w, int h, unsigned char* pixels, int stride);
-  extern void createSurfaceForData_A8(int w, int h, unsigned char* pixels, int stride);
+  extern int getStrideForWidth(int w);
+  extern void createSurfaceForData(int w, int h, unsigned char* pixels, int stride);
   extern void finalize();
   extern void flush();
   extern void clearExtraSurfaces();
