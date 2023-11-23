@@ -1,5 +1,5 @@
-        cmake_minimum_required(VERSION 3.0)
-project(hw-control-sdl
+cmake_minimum_required(VERSION 3.5)
+project(indiscipline
         VERSION 1.0
         DESCRIPTION "minimalistic front end & hardware interface"
         LANGUAGES CXX
@@ -34,7 +34,6 @@ set(SOURCES
 option(USE_GPIO "use gpio" ON)
 option(USE_SSD1306_SPI "use spi display" ON)
 
-# reminder: -U disables it, -D enables it (define and undefine)
 if (USE_GPIO)
     add_definitions(-DUSE_GPIO)
 endif()
@@ -42,21 +41,27 @@ if (USE_SSD1306)
     add_definitions(-DUSE_SSD1306)
 endif()
 
-
-#will not compile with SDL and attempt to connect 
-#option(USE_SSD1306_SPI "use spi display SSD1306" OFF)
-
-include_directories(hw-control-sdl /usr/include/pango-1.0)
-include_directories(hw-control-sdl /usr/include/glib-2.0)
-include_directories(hw-control-sdl /usr/lib/glib-2.0/include)
-include_directories(hw-control-sdl /usr/include/harfbuzz)
-include_directories(hw-control-sdl /usr/include/cairo)
+include_directories(indiscipline /usr/include/pango-1.0)
+include_directories(indiscipline /usr/include/glib-2.0)
+include_directories(indiscipline /usr/lib/glib-2.0/include)
+include_directories(indiscipline /usr/include/harfbuzz)
+include_directories(indiscipline /usr/include/cairo)
 
 # Configuração do executável
-add_executable(hw-control-sdl ${SOURCES})
+add_executable(indiscipline ${SOURCES})
 
-# Configuração de bibliotecas adicionais (opcional)
-target_link_libraries(hw-control-sdl
+set(SCRIPTS_DIR "$ENV{HOME}/views")
+message(STATUS "Lua scripts folder will be created at: ${SCRIPTS_DIR}")
+
+install(TARGETS indiscipline DESTINATION /usr/bin)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/scripts/
+        DESTINATION ${SCRIPTS_DIR}
+        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+)
+
+
+target_link_libraries(indiscipline
         jack
         i2c
         pigpio

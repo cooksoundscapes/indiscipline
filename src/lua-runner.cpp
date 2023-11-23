@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <filesystem>
+#include <cstdlib>
 
 LuaRunner::LuaRunner() {
   state = luaL_newstate();
@@ -40,8 +41,13 @@ LuaRunner::~LuaRunner() {
 }
 
 std::string LuaRunner::getPath() {
-  std::filesystem::path currentPath = std::filesystem::current_path();
-  std::string scriptsDir = currentPath.parent_path().string() + "/scripts/";
+  const char* homeDir = getenv("HOME");
+  auto scriptsDir = std::string(homeDir) + "/views";
+
+  if (!std::filesystem::exists(scriptsDir)) {
+    std::cerr << "$HOME/views directory is missing! please create it and try again;\n";
+    exit(1);
+  }
   return scriptsDir;
 }
 
