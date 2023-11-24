@@ -32,7 +32,7 @@ set(SOURCES
 )
 
 option(USE_GPIO "use gpio" ON)
-option(USE_SSD1306_SPI "use spi display" ON)
+option(USE_SSD1306 "use OLED display (spi)" ON)
 
 if (USE_GPIO)
     add_definitions(-DUSE_GPIO)
@@ -61,6 +61,9 @@ install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E echo Changing permissi
               execute_process(COMMAND ${CMAKE_COMMAND} -E env bash -c \"sudo chmod -R 777 ${SCRIPTS_DIR}\")"
 )
 
+file(READ scripts/utils.lua UTILS_CONTENT)
+string(APPEND UTILS_CONTENT "\npackage.path = \"$ENV{HOME}/views/?.lua;\" .. package.path\n")
+file(WRITE scripts/utils.lua "${UTILS_CONTENT}")     
 
 target_link_libraries(indiscipline
         jack
