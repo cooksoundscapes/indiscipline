@@ -79,7 +79,9 @@
     "valarray": "cpp",
     "variant": "cpp",
     "filesystem": "cpp",
-    "csignal": "cpp"
+    "csignal": "cpp",
+    "hash_set": "cpp",
+    "shared_mutex": "cpp"
   },
   "Lua.diagnostics.globals": [
     "set_source_rgb",

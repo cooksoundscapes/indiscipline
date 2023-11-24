@@ -42,7 +42,7 @@ LuaRunner::~LuaRunner() {
 
 std::string LuaRunner::getPath() {
   const char* homeDir = getenv("HOME");
-  auto scriptsDir = std::string(homeDir) + "/views";
+  auto scriptsDir = std::string(homeDir) + "/views/";
 
   if (!std::filesystem::exists(scriptsDir)) {
     std::cerr << "$HOME/views directory is missing! please create it and try again;\n";
