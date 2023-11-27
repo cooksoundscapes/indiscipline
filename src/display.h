@@ -17,6 +17,11 @@ class Display {
   
 public:
   Display(int w, int h) : width(w), height(h) {}
+
+  void setSize(int w, int h) {
+    this->width = w;
+    this->height = h;
+  }
   
   void setDevice(std::shared_ptr<SSD1306Base> device) {this->device = device;}
   

@@ -25,6 +25,8 @@ public:
   Window(int w, int h);
   ~Window();
 
+  void setSize(int w, int h);
+
   void loop();
   void stop() {shouldQuit = true; }
 

@@ -32,7 +32,39 @@ void signalHandler(int signal) {
   }
 }
 
-int main() {
+int main(int argc, const char** argv) {
+  // retrieve args "-w" and "-h" and their values,
+  // also check if they are valid
+  int width = 0;
+  int height = 0;
+  for (int i = 0; i < argc; i++) {
+    if (std::string(argv[i]) == "-w") {
+      // avoid segfault if no value is provided
+      if (i+1 >= argc) {
+        std::cout << "Invalid width value\n";
+        return 1;
+      }
+      width = std::stoi(argv[i+1]);
+    }
+    if (std::string(argv[i]) == "-h") {
+      // avoid segfault if no value is provided
+      if (i+1 >= argc) {
+        std::cout << "Invalid height value\n";
+        return 1;
+      }
+      height = std::stoi(argv[i+1]);
+    }
+  }
+  #ifdef USE_SSD1306
+    if (width > 0 && height > 0) {
+      graphics.setSize(width, height);
+    }
+  #else
+    if (width > 0 && height > 0) {
+      graphics.setSize(width, height);
+    }
+  #endif
+
   // initialize osc server, GPIOs and hardware panel
   OscServer oscServer;
 

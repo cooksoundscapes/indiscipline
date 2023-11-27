@@ -47,6 +47,12 @@ Window::~Window()
   std::cout << "Booh bye!\n";
 }
 
+void Window::setSize(int w, int h) {
+  this->w = w;
+  this->h = h;
+  SDL_SetWindowSize(window, w, h);
+}
+
 void Window::loop()
 {
   screen = SDL_CreateTexture(
