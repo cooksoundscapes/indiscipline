@@ -6,7 +6,7 @@ Color = {
   black = {hex("#000000")}
 }
 
-function Set_color(rgb_table)
+function SetColor(rgb_table)
   set_source_rgb(table.unpack(rgb_table))
 end
 
@@ -22,9 +22,17 @@ function Center(width, height)
   return (screen_w - width)/2, (screen_h - height)/2
 end
 
+function PrintTable(table)
+  for k, v in pairs(table) do
+    print(k, v)
+  end
+end
+
 -- placeholders to avoid accessing nil functions
 function Draw() end
-function SetParam() end
+function SetParam(name, value) end
 function Cleanup() end
 function PanelInput(device, pin, value) end
 function SetTable(table, name) end
+
+package.path = "/home/now/views/?.lua;" .. package.path
