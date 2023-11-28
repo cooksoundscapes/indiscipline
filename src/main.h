@@ -29,6 +29,7 @@ constexpr const char* PANEL_INPUT = "PanelInput";
 constexpr const char* DRAW = "Draw";
 constexpr const char* CLEANUP = "Cleanup";
 constexpr const char* SET_TABLE = "SetTable";
+constexpr int HOME_BUTTON = 1;
 
 //----------------------HW-------------------//
 
@@ -37,3 +38,5 @@ constexpr int RESETPIN = 22;
 constexpr int DCPIN = 23;
 constexpr int ENCODER_INT = 17;
 constexpr int BUTTON_INT = 27;
+constexpr const char* ENCODERS = "encoders";
+constexpr const char* BUTTONS = "buttons";
