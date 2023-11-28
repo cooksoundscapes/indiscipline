@@ -1,6 +1,3 @@
-#define USE_GPIO
-#define USE_SSD1306
-
 #include "main.h"
 #ifdef USE_SSD1306
   #include "hardware/ssd1306-spi.h"
