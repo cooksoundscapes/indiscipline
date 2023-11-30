@@ -38,6 +38,7 @@ namespace Cairo {
     int size;
     int width;
     bool centered;
+    bool enableAntiAlias;
   };
   extern void text(TextParams&);
 }

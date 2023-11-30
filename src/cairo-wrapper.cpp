@@ -90,12 +90,12 @@ void Cairo::stroke() {
 void Cairo::text(TextParams& params)
 {
   // should optimize view in OLED display, verify if it's needed in fbdev
-  #ifdef USE_SSD1306
+  if (!params.enableAntiAlias) {
     cairo_font_options_t *options = cairo_font_options_create();
     cairo_font_options_set_antialias(options, CAIRO_ANTIALIAS_NONE);
     cairo_set_font_options(cr, options);
     cairo_font_options_destroy(options);
-  #endif
+  }
   //-----------------------
 
   PangoLayout* layout = pango_cairo_create_layout(cr);

@@ -92,11 +92,11 @@ int main(int argc, const char** argv) {
     graphics.setSize(width, height);
   }
   #ifdef USE_SSD1306
-    luaInterpreter->setGlobal(SCREEN_W, width || OLED_DISPLAY_WIDTH);
-    luaInterpreter->setGlobal(SCREEN_H, height || OLED_DISPLAY_HEIGHT);
+    luaInterpreter->setGlobal(SCREEN_W, (width > 0) ? width : OLED_DISPLAY_WIDTH);
+    luaInterpreter->setGlobal(SCREEN_H, (height > 0) ? height : OLED_DISPLAY_HEIGHT);
   #else
-    luaInterpreter->setGlobal(SCREEN_W, width || WINDOW_WIDTH);
-    luaInterpreter->setGlobal(SCREEN_H, height || WINDOW_HEIGHT);
+    luaInterpreter->setGlobal(SCREEN_W, (width > 0) ? width : WINDOW_WIDTH);
+    luaInterpreter->setGlobal(SCREEN_H, (height > 0) ? height : WINDOW_HEIGHT);
   #endif
 
   // setup lua interpreter at graphics driver and OSC

@@ -118,8 +118,6 @@ int _stroke(lua_State* l) {
 int _text(lua_State* l) {
   Cairo::TextParams params;
 
-
-
   const char* txt = luaL_checkstring(l, 1);
   double size = luaL_optnumber(l, 2, 0);
   const char* font = luaL_optstring(l, 3, DEFAULT_FONT);
@@ -130,12 +128,18 @@ int _text(lua_State* l) {
   if (lua_isnumber(l, -1) && size == 0) {
     size = lua_tonumber(l, -1);
   }
+  bool enableAntiAlias = false;
+  lua_getglobal(l, "FontAntiAlias");
+  if (lua_isboolean(l, -1)) {
+    enableAntiAlias = lua_toboolean(l, -1);
+  }
 
   params.text = txt;
   params.size = size;
   params.font = font;
   params.width = width;
   params.centered = centered;
+  params.enableAntiAlias = enableAntiAlias;
 
   Cairo::text(params);
   lua_settop(l, 0);

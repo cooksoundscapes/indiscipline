@@ -54,16 +54,16 @@ set(SCRIPTS_DIR "$ENV{HOME}/views")
 message(STATUS "Lua scripts folder will be created at: ${SCRIPTS_DIR}")
 
 install(TARGETS indiscipline DESTINATION /usr/bin)
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/scripts/ DESTINATION ${SCRIPTS_DIR})
+#install(DIRECTORY ${CMAKE_SOURCE_DIR}/scripts/ DESTINATION ${SCRIPTS_DIR})
 
-install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E echo Changing permissions...)
-              execute_process(COMMAND ${CMAKE_COMMAND} -E echo \"sudo chmod -R 777 ${SCRIPTS_DIR}\")
-              execute_process(COMMAND ${CMAKE_COMMAND} -E env bash -c \"sudo chmod -R 777 ${SCRIPTS_DIR}\")"
-)
+#install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E echo Changing permissions...)
+#              execute_process(COMMAND ${CMAKE_COMMAND} -E echo \"sudo chmod -R 777 ${SCRIPTS_DIR}\")
+#              execute_process(COMMAND ${CMAKE_COMMAND} -E env bash -c \"sudo chmod -R 777 ${SCRIPTS_DIR}\")"
+#)
 
-file(READ scripts/utils.lua UTILS_CONTENT)
-string(APPEND UTILS_CONTENT "\npackage.path = \"$ENV{HOME}/views/?.lua;\" .. package.path\n")
-file(WRITE scripts/utils.lua "${UTILS_CONTENT}")     
+#file(READ scripts/utils.lua UTILS_CONTENT)
+#string(APPEND UTILS_CONTENT "\npackage.path = \"$ENV{HOME}/views/?.lua;\" .. package.path\n")
+#file(WRITE scripts/utils.lua "${UTILS_CONTENT}")     
 
 target_link_libraries(indiscipline
         jack
