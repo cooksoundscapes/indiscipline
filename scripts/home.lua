@@ -1,36 +1,24 @@
 -- home page will receive input only through PanelInput!
 
 LastPage = "home"
-local running_patch = ""
-local pd_patches = {}
 
-function pd_init()
-	local ls_out = io.popen("ls ~/pd/*.pd")
-	if ls_out ~= nil then
-		for line in ls_out:lines() do
-			local filename = line:match(".+/([^/]+)")   -- Get the last part after the last '/'
-			local no_extension = filename:match("(.+)%..+")
 
-			table.insert(pd_patches, {
-				name=no_extension,
-				action = function(name)
-					if name == running_patch then
-						load_module(app, LastPage)
-					else
-						os.execute("killall pd")
-						os.execute("pd -nogui ~/pd/"..name..".pd &")
-						running_patch = name
-					end
-				end
-			})
-		end
-	end
-end
+local pd_init = require("pd_init")
+local current_patch = ""
+local pd_patches = pd_init(current_patch)
 
-pd_init()
+local current_view = "home"
+local general_file_handler
 
 local menu = require("components.menu")
 menu.entries = {
+	{
+		name = "test",
+		action = function()
+			general_file_handler = io.popen("~/longtest.sh")
+			current_view = "test"
+		end
+	},
 	{
 		name = "load patch",
 		submenu=pd_patches,
@@ -64,20 +52,64 @@ menu.entries = {
 			},
 		},
 	},
+	settings = {
+		{
+			name = "OSC settings",
+			action = function()
+				current_view = "osc_settings"
+			end
+		}
+	}
+}
+
+local views = {
+	home = function()
+		menu:draw()
+	end,
+	osc_settings = function()
+		text("OSC settings")
+	end,
+	dhcp = function()
+		text("DHCP")
+	end,
+	shutting_down = function()
+		text("Shutting down...")
+	end,
+	rebooting = function()
+		text("Rebooting...")
+	end,
+	restart_jack = function()
+		text("Restarting Jack...")
+	end,
+	test = function()
+		if general_file_handler ~= nil then
+			local output = general_file_handler:read("*a")
+			text(output)
+			if output == "3" then
+				current_view = "home"
+				general_file_handler:close()
+			end
+		end
+	end,
 }
 
 function Draw()
-  menu:draw()
+	views[current_view]()
 end
 
 local buttons = {
-	function()
+	function() -- home button
 		load_module(app, LastPage)
 	end,
-	function()
+	function() -- "left" button
+		if current_view == "home" then
+			current_view = "osc_settings"
+		else
+			current_view = "home"
+		end
 		menu:back()
 	end,
-	function()
+	function() -- "right" button
 		menu:call()
 	end
 }

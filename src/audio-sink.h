@@ -24,7 +24,9 @@ public:
         return err;
     }
 
-    int getBufferSize() {return (int)bufferSize;};
+    int getBufferSize() override {return (int)bufferSize;};
+    void restart() override;
+
     void connect();
 
 private:

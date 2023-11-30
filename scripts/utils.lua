@@ -34,3 +34,4 @@ function SetParam(name, value) end
 function Cleanup() end
 function PanelInput(device, pin, value) end
 function SetTable(table, name) end
+package.path = "/home/me/views/?.lua;" .. package.path

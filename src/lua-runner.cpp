@@ -34,6 +34,7 @@ LuaRunner::LuaRunner() {
   loadFunction("get_audio_buffer", &LuaRunner::getAudioBuffer);
   loadFunction("get_buffer_size", &LuaRunner::getBufferSize);
   loadFunction("load_module", &LuaRunner::loadModule);
+  loadFunction("restart_jack", &LuaRunner::restartJack);
 }
 
 LuaRunner::~LuaRunner() {
