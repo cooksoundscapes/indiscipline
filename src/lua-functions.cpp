@@ -115,6 +115,14 @@ int _stroke(lua_State* l) {
   return 0;
 }
 
+int _set_operator(lua_State* l) {
+  lua_check_num_args(l, 1);
+  const char* op = luaL_checkstring(l, 1);
+  Cairo::setOperator(op);
+  lua_settop(l, 0);
+  return 0;
+}
+
 int _text(lua_State* l) {
   Cairo::TextParams params;
 

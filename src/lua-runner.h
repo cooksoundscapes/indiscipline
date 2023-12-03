@@ -21,6 +21,7 @@ extern int _set_line_width(lua_State* l);
 extern int _paint(lua_State* l);
 extern int _fill(lua_State* l);
 extern int _stroke(lua_State* l);
+extern int _set_operator(lua_State* l);
 extern int _text(lua_State* l);
 extern int _create_surface(lua_State* l);
 extern int _draw_surface(lua_State* l);

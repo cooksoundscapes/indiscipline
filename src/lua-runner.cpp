@@ -26,6 +26,7 @@ LuaRunner::LuaRunner() {
   loadFunction("paint", &_paint);
   loadFunction("fill", &_fill);
   loadFunction("stroke", &_stroke);
+  loadFunction("set_operator", &_set_operator);
   loadFunction("set_line_width", &_set_line_width);
   loadFunction("create_surface", &_create_surface);
   loadFunction("draw_surface", &_draw_surface);
