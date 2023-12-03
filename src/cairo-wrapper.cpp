@@ -13,6 +13,37 @@ cairo_surface_t* Cairo::surface = nullptr;
 #endif
 
 std::unordered_map<std::string, cairo_surface_t*> Cairo::extraSurfaces;
+std::unordered_map<std::string, cairo_operator_t> Cairo::operators = {
+  {"clear", CAIRO_OPERATOR_CLEAR},
+  {"source", CAIRO_OPERATOR_SOURCE},
+  {"over", CAIRO_OPERATOR_OVER},
+  {"in", CAIRO_OPERATOR_IN},
+  {"out", CAIRO_OPERATOR_OUT},
+  {"atop", CAIRO_OPERATOR_ATOP},
+  {"dest", CAIRO_OPERATOR_DEST},
+  {"dest_over", CAIRO_OPERATOR_DEST_OVER},
+  {"dest_in", CAIRO_OPERATOR_DEST_IN},
+  {"dest_out", CAIRO_OPERATOR_DEST_OUT},
+  {"dest_atop", CAIRO_OPERATOR_DEST_ATOP},
+  {"xor", CAIRO_OPERATOR_XOR},
+  {"add", CAIRO_OPERATOR_ADD},
+  {"saturate", CAIRO_OPERATOR_SATURATE},
+  {"multiply", CAIRO_OPERATOR_MULTIPLY},
+  {"screen", CAIRO_OPERATOR_SCREEN},
+  {"overlay", CAIRO_OPERATOR_OVERLAY},
+  {"darken", CAIRO_OPERATOR_DARKEN},
+  {"lighten", CAIRO_OPERATOR_LIGHTEN},
+  {"color_dodge", CAIRO_OPERATOR_COLOR_DODGE},
+  {"color_burn", CAIRO_OPERATOR_COLOR_BURN},
+  {"hard_light", CAIRO_OPERATOR_HARD_LIGHT},
+  {"soft_light", CAIRO_OPERATOR_SOFT_LIGHT},
+  {"difference", CAIRO_OPERATOR_DIFFERENCE},
+  {"exclusion", CAIRO_OPERATOR_EXCLUSION},
+  {"hsl_hue", CAIRO_OPERATOR_HSL_HUE},
+  {"hsl_saturation", CAIRO_OPERATOR_HSL_SATURATION},
+  {"hsl_color", CAIRO_OPERATOR_HSL_COLOR},
+  {"hsl_luminosity", CAIRO_OPERATOR_HSL_LUMINOSITY}
+};
 
 int Cairo::getStrideForWidth(int width) {
   return cairo_format_stride_for_width(defaultFormat, width);
@@ -85,6 +116,11 @@ void Cairo::fill() {
 }
 void Cairo::stroke() {
   cairo_stroke(cr);
+}
+
+void Cairo::setOperator(std::string op) {
+  if (operators.find(op) == operators.end()) return;
+  cairo_set_operator(cr, operators[op]);
 }
 
 void Cairo::text(TextParams& params)
