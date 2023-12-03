@@ -93,6 +93,8 @@ void Cairo::text(TextParams& params)
   if (!params.enableAntiAlias) {
     cairo_font_options_t *options = cairo_font_options_create();
     cairo_font_options_set_antialias(options, CAIRO_ANTIALIAS_NONE);
+    //cairo_font_options_set_hint_style(options, CAIRO_HINT_STYLE_FULL);
+
     cairo_set_font_options(cr, options);
     cairo_font_options_destroy(options);
   }

@@ -120,7 +120,7 @@ int _text(lua_State* l) {
 
   const char* txt = luaL_checkstring(l, 1);
   double size = luaL_optnumber(l, 2, 0);
-  const char* font = luaL_optstring(l, 3, DEFAULT_FONT);
+  const char* font = luaL_optstring(l, 3, "");
   double width = luaL_optnumber(l, 4, 0);
   bool centered = luaL_optnumber(l, 5, 0);
 
@@ -132,6 +132,13 @@ int _text(lua_State* l) {
   lua_getglobal(l, "FontAntiAlias");
   if (lua_isboolean(l, -1)) {
     enableAntiAlias = lua_toboolean(l, -1);
+  }
+  lua_getglobal(l, "DefaultFont");
+  if (font[0] == '\0') {
+    if (lua_isstring(l, -1))
+      font = lua_tostring(l, -1);
+    else
+      font = "Sans";
   }
 
   params.text = txt;
