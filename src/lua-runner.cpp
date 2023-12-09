@@ -35,7 +35,8 @@ LuaRunner::LuaRunner() {
   loadFunction("get_audio_buffer", &LuaRunner::getAudioBuffer);
   loadFunction("get_buffer_size", &LuaRunner::getBufferSize);
   loadFunction("load_module", &LuaRunner::loadModule);
-  loadFunction("restart_jack", &LuaRunner::restartJack);
+  loadFunction("jack_start", &LuaRunner::startJack);
+  loadFunction("jack_stop", &LuaRunner::stopJack);
 }
 
 LuaRunner::~LuaRunner() {
@@ -59,7 +60,7 @@ void LuaRunner::loadFile(std::string file)
 
   auto scriptsDir = getPath();
   auto filepath = scriptsDir + file + ".lua";
-  std::string utils = scriptsDir + LUA_UTILS + ".lua";
+  std::string utils = scriptsDir + LUA_SETUP + ".lua";
 
   //load global utils
   if (!firstLoaded) {

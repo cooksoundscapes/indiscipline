@@ -72,16 +72,21 @@ AudioSink::AudioSink(int chan_count)
     jack_connect(client, "system:capture_2", "craddle:input_2");
 };
 
-void AudioSink::restart() {
+void AudioSink::stop() {
     if (!client) return;
+    std::cout << "Stopping audio client\n";
     if(jack_deactivate(client)) {
         std::cerr << "Failed to close client;\n";
     }
-    if (jack_activate (client)) 
+}
+
+void AudioSink::start() {
+    if (!client) return;
+    std::cout << "Starting audio client\n";
+    if (jack_activate(client)) 
     {
         std::cerr << "Could not activate client";
     }
-
 }
 
 AudioSink::~AudioSink()

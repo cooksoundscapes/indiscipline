@@ -8,7 +8,8 @@ public:
     AudioSinkBase() = default;
     virtual ~AudioSinkBase() = default;
 
-    virtual void restart() = 0;
+    virtual void start() = 0;
+    virtual void stop() = 0;
 
     virtual const AudioBuffer& getBuffer(int chan) const = 0;
     virtual int getBufferSize() = 0;

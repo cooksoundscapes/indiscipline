@@ -67,5 +67,6 @@ public:
   static int getAudioBuffer(lua_State*);
   static int loadModule(lua_State*);
   static int getBufferSize(lua_State*);
-  static int restartJack(lua_State*);
+  static int startJack(lua_State*);
+  static int stopJack(lua_State*);
 };

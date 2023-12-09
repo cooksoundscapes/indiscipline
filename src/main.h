@@ -4,7 +4,7 @@
 constexpr const char* SEND_OSC = "send_osc";
 constexpr const char* HOME_PAGE = "home";
 constexpr const char* DIRECT_CONTROL = "direct-ctrl";
-constexpr const char* LUA_UTILS = "utils";
+constexpr const char* LUA_SETUP = "setup";
 constexpr const char* OSC_CLIENT = "7778";
 constexpr const char* OSC_SERV = "7777";
 constexpr int A_CHANNELS = 10;

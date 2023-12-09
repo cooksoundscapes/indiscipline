@@ -228,10 +228,17 @@ int LuaRunner::getBufferSize(lua_State* l) {
   return 1;
 }
 
-int LuaRunner::restartJack(lua_State* l) {
+int LuaRunner::startJack(lua_State* l) {
   lua_check_num_args(l, 1);
   auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, 1));
-  luaRunner->audioSink->restart();
+  luaRunner->audioSink->start();
+  return 0;
+}
+
+int LuaRunner::stopJack(lua_State* l) {
+  lua_check_num_args(l, 1);
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, 1));
+  luaRunner->audioSink->stop();
   return 0;
 }
 

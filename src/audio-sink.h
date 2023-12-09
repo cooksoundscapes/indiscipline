@@ -25,7 +25,8 @@ public:
     }
 
     int getBufferSize() override {return (int)bufferSize;};
-    void restart() override;
+    void start() override;
+    void stop() override;
 
     void connect();
 
