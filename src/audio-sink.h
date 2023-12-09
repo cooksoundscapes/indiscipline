@@ -35,5 +35,7 @@ private:
     jack_client_t* client;
     JackPorts ports;
 
+    int chan_count;
+
     static int outside_process_call(jack_nframes_t, void*); // TODO: find a better naming
 };

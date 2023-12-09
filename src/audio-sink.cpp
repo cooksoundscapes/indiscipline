@@ -27,29 +27,43 @@ int AudioSink::process(jack_nframes_t nframes)
 AudioSink::AudioSink(int chan_count)
 {
     buffers.resize(chan_count);
+    this->chan_count = chan_count;
+    start();
+};
+
+void AudioSink::stop() {
+    if (!client) return;
+    std::cout << "Stopping audio client\n";
+    if(jack_deactivate(client)) {
+        std::cerr << "Failed to close client;\n";
+    }
+    ports.clear();
+    for (auto buff : buffers) {
+        buff.clear();
+    }
+    buffers.clear();
+}
+
+void AudioSink::start() {
     if((client = jack_client_open("craddle", JackNullOption, NULL)) == NULL)
     {
         std::cerr << "\nJack server not running, program will not process audio." << std::endl;        
-        for (auto& buff : buffers)
-        {
+        for (auto& buff : buffers) {
             buff.resize(1);
         }
         return;
     } else {
         bufferSize = jack_get_buffer_size(client);
     }
-
     //pre allocate & initialize audio buffers
-    for (auto& buff: buffers)
-    {
+    for (auto& buff: buffers) {
         buff.resize(bufferSize);
     }
     //pre allocate only the jack ports;
     ports.reserve(chan_count);
 
     //register audio inputs
-    for (int i{0}; i < chan_count; i++) 
-    {
+    for (int i{0}; i < chan_count; i++) {
         std::string portName = "input_"+std::to_string(i+1);
         ports.push_back(jack_port_register(
             client, 
@@ -59,42 +73,20 @@ AudioSink::AudioSink(int chan_count)
             0
         ));
     }
-
     jack_set_process_callback(client, AudioSink::outside_process_call, this);
 
-    if (jack_activate (client)) 
-    {
+    if (jack_activate(client)) {
         std::cerr << "Could not activate client";
     }
 
     //FOR TESTING PURPOSES ONLY! (maybe)
     jack_connect(client, "system:capture_1", "craddle:input_1");
     jack_connect(client, "system:capture_2", "craddle:input_2");
-};
-
-void AudioSink::stop() {
-    if (!client) return;
-    std::cout << "Stopping audio client\n";
-    if(jack_deactivate(client)) {
-        std::cerr << "Failed to close client;\n";
-    }
-}
-
-void AudioSink::start() {
-    if (!client) return;
-    std::cout << "Starting audio client\n";
-    if (jack_activate(client)) 
-    {
-        std::cerr << "Could not activate client";
-    }
 }
 
 AudioSink::~AudioSink()
 {
-    if (!client) return;
-    if(jack_deactivate(client)) {
-        std::cerr << "Failed to close client;\n";
-    }
+    stop();
 }
 
 void AudioSink::connect() 
