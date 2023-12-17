@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SDL2/SDL_image.h>
 
-Window::Window(int w, int h) : w{w}, h{h}
+Window::Window(int w, int h) : ScreenBase(w, h)
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     std::cerr << SDL_GetError() << '\n';
@@ -48,8 +48,7 @@ Window::~Window()
 }
 
 void Window::setSize(int w, int h) {
-  this->w = w;
-  this->h = h;
+  ScreenBase::setSize(w, h);
   SDL_SetWindowSize(window, w, h);
 }
 
@@ -59,8 +58,8 @@ void Window::loop()
     renderer,
     SDL_PIXELFORMAT_ARGB8888,
     SDL_TEXTUREACCESS_STREAMING,
-    w,
-    h
+    width,
+    height
   );
   auto start = SDL_GetTicks();
   auto end = SDL_GetTicks();
@@ -106,7 +105,7 @@ void Window::draw() {
   SDL_LockTexture(screen, NULL, &rawData, &stride);
   auto pixels = static_cast<unsigned char*>(rawData);
 
-  Cairo::createSurfaceForData(w, h, pixels, stride);
+  Cairo::createSurfaceForData(width, height, pixels, stride);
 
   if (luaInterpreter != nullptr)
     luaInterpreter->draw();
@@ -115,8 +114,4 @@ void Window::draw() {
   SDL_UnlockTexture(screen);
   Cairo::flush();
   Cairo::finalize();
-}
-
-void Window::loadLuaScript(std::string file) {
-  luaInterpreter->loadFile(file);
 }

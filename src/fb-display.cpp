@@ -1,13 +1,12 @@
-#include "display.h"
+#include "fb-display.h"
+#include "cairo-wrapper.h"
 #include <chrono>
 #include <thread>
-#include "cairo-wrapper.h"
 
 using namespace std::chrono;
 
-void Display::loop() {
+void FramebufferDisplay::loop() {
   // setup FPS
-  int targetFps = 60;
   milliseconds frameDuration(1000 / targetFps);
 
   // prepare pixel data allocation
@@ -18,8 +17,6 @@ void Display::loop() {
     auto start = high_resolution_clock::now();
 		
     draw(stride);
-    if (device)
-      device->update(pixel_data);
 
     auto end = high_resolution_clock::now();
     auto elapsed = duration_cast<milliseconds>(end - start);
@@ -30,25 +27,7 @@ void Display::loop() {
   }
 }
 
-/**
- * @deprecated (almost)
-*/
-void Display::measureFps() {
-  static int frameCount = 0;
-  static auto lastSecond = high_resolution_clock::now();
-
-  frameCount++;
-  auto now = high_resolution_clock::now();
-  auto elapsedSeconds = duration_cast<seconds>(now - lastSecond);
-  if (elapsedSeconds.count() >= 1) {
-    double actualFPS = frameCount / elapsedSeconds.count();
-    frameCount = 0;
-    lastSecond = now;
-    luaInterpreter->setGlobal("fps", actualFPS);
-  }
-}
-
-void Display::draw(int stride) {
+void FramebufferDisplay::draw(int stride) {
   pixel_data.assign(pixel_data.size(), 0);
   Cairo::createSurfaceForData(
     width, height,
@@ -59,8 +38,4 @@ void Display::draw(int stride) {
     luaInterpreter->draw();
   Cairo::flush();
   Cairo::finalize();
-}
-
-void Display::loadLuaScript(std::string file) {
-  luaInterpreter->loadFile(file);
 }

@@ -1,9 +1,13 @@
 #include "main.h"
 #ifdef USE_SSD1306
   #include "hardware/ssd1306-spi.h"
-  #include "display.h"
+  #include "spi-display.h"
 #else
+  #ifdef USE_FB
+    #include "fb-display.h"
+  #else
     #include "window.h"
+  #endif
 #endif
 #ifdef USE_GPIO
   #include "hardware/gpio.h"
@@ -21,9 +25,13 @@
 
 // define main graphics driver globally
 #ifdef USE_SSD1306
-  Display graphics(OLED_DISPLAY_WIDTH, OLED_DISPLAY_HEIGHT);
-#else 
-  Window graphics(WINDOW_WIDTH, WINDOW_HEIGHT);
+  SPIDisplay graphics(OLED_DISPLAY_WIDTH, OLED_DISPLAY_HEIGHT);
+#else
+  #ifdef USE_FB
+    FramebufferDisplay graphics(WINDOW_WIDTH, WINDOW_HEIGHT);
+  #else
+    Window graphics(WINDOW_WIDTH, WINDOW_HEIGHT);
+  #endif
 #endif
 
 void signalHandler(int signal) {

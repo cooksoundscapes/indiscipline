@@ -23,7 +23,8 @@ set(SOURCES
         src/cairo-wrapper.cpp
         src/audio-sink.cpp
         src/osc-server.cpp
-        src/display.cpp
+        src/spi-display.cpp
+        src/fb-display.cpp
         src/hardware/panel.cpp
         src/hardware/pcf-8574.cpp
         #src/hardware/gpio.cpp
@@ -32,13 +33,17 @@ set(SOURCES
 )
 
 option(USE_GPIO "use gpio" ON)
-option(USE_SSD1306 "use OLED display (spi)" ON)
+option(USE_SSD1306 "use OLED display (spi)" OFF)
+option(USE_FB "use direct framebuffer" OFF)
 
 if (USE_GPIO)
     add_definitions(-DUSE_GPIO)
 endif()
 if (USE_SSD1306)
     add_definitions(-DUSE_SSD1306)
+endif()
+if (USE_FB)
+    add_definitions(-DUSE_FB)
 endif()
 
 include_directories(indiscipline /usr/include/pango-1.0)
