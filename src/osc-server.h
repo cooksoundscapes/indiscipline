@@ -9,4 +9,8 @@ class OscServer {
 public:
   void setLuaInterpreter(std::shared_ptr<LuaRunnerBase> luaR) { this->luaRunner = luaR; }
   void init();
+
+  ~OscServer() {
+    lo_server_thread_free(thread);
+  }
 };

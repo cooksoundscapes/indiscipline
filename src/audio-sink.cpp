@@ -16,6 +16,10 @@ int AudioSink::process(jack_nframes_t nframes)
     for (size_t i{0}; i < ports.size(); i++)
     {
         float* temp = (float*)jack_port_get_buffer(ports[i], nframes);
+        if (temp == nullptr) {
+            std::cerr << "Failed to get buffer from port " << jack_port_name(ports[i]) << std::endl;
+            exit(1);
+        }
         for (size_t s{0}; s < bufferSize; s++)
         {
             buffers[i][s] = temp[s];
@@ -26,7 +30,6 @@ int AudioSink::process(jack_nframes_t nframes)
 
 AudioSink::AudioSink(int chan_count)
 {
-    buffers.resize(chan_count);
     this->chan_count = chan_count;
     start();
 };
@@ -45,6 +48,8 @@ void AudioSink::stop() {
 }
 
 void AudioSink::start() {
+    std::cout << "Starting jack client..\n";
+    buffers.resize(chan_count);
     if((client = jack_client_open("craddle", JackNullOption, NULL)) == NULL)
     {
         std::cerr << "\nJack server not running, program will not process audio." << std::endl;        
@@ -53,8 +58,10 @@ void AudioSink::start() {
         }
         return;
     } else {
+        std::cout << "Jack client started\n";
         bufferSize = jack_get_buffer_size(client);
     }
+    std::cout << "Buffer size: " << bufferSize << std::endl;
     //pre allocate & initialize audio buffers
     for (auto& buff: buffers) {
         buff.resize(bufferSize);
@@ -64,15 +71,22 @@ void AudioSink::start() {
 
     //register audio inputs
     for (int i{0}; i < chan_count; i++) {
+        std::cout << "Registering port " << "input_"+std::to_string(i+1) << std::endl;
         std::string portName = "input_"+std::to_string(i+1);
-        ports.push_back(jack_port_register(
+        auto port = jack_port_register(
             client, 
             portName.c_str(), 
             JACK_DEFAULT_AUDIO_TYPE, 
             JackPortIsInput, 
             0
-        ));
+        );
+        if (port == nullptr) {
+            std::cerr << "Failed to register port " << portName << std::endl;
+        } else {
+            ports.push_back(port);
+        }
     }
+    std::cout << "Registering callback\n";
     jack_set_process_callback(client, AudioSink::outside_process_call, this);
 
     if (jack_activate(client)) {
@@ -84,8 +98,7 @@ void AudioSink::start() {
     jack_connect(client, "system:capture_2", "craddle:input_2");
 }
 
-AudioSink::~AudioSink()
-{
+AudioSink::~AudioSink() {
     stop();
 }
 

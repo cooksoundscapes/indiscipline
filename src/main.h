@@ -34,4 +34,6 @@ constexpr int DCPIN = 23;
 constexpr int ENCODER_INT = 17;
 constexpr int BUTTON_INT = 27;
 constexpr const char* ENCODERS = "encoders";
-constexpr const char* BUTTONS = "buttons";
+constexpr const char* NAV_BUTTONS = "nav_buttons";
+constexpr const char* SEQ_BUTTONS = "seq_buttons";
+constexpr const char* LED_ARRAY = "led_array";

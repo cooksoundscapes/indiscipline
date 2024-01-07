@@ -82,7 +82,7 @@ int main(int argc, const char** argv) {
     auto sendOsc = [&osc_addr, &luaInterpreter](std::string device, int pin, int value)
     {
       // bypass osc if home button is pressed
-      if (device == BUTTONS && pin == HOME_BUTTON && value == 1) {
+      if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == 1) {
         luaInterpreter->loadFile(HOME_PAGE);
         return;
       }
@@ -91,9 +91,11 @@ int main(int argc, const char** argv) {
     };
     panel->registerCallback(SEND_OSC, sendOsc);
 
-    // setup display device
-    auto displayDevice = std::make_shared<SSD1306_SPI>(gpio);
-    graphics.setDevice(displayDevice);
+    #ifdef USE_SSD1306
+      // setup display device
+      auto displayDevice = std::make_shared<SSD1306_SPI>(gpio);
+      graphics.setDevice(displayDevice);
+    #endif
   #endif
 
   if (width > 0 && height > 0) {

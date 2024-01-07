@@ -38,4 +38,12 @@ void FramebufferDisplay::draw(int stride) {
     luaInterpreter->draw();
   Cairo::flush();
   Cairo::finalize();
+
+  // Reset the file pointer to the beginning of the framebuffer device
+  lseek(fb_fd, 0, SEEK_SET);
+
+  if (write(fb_fd, pixel_data.data(), pixel_data.size()) < 0) {
+    perror("[fb write]");
+    exit(1);
+  }
 }

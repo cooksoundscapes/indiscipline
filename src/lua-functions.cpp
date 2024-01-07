@@ -1,6 +1,7 @@
 #include "lua-runner.h"
 #include "cairo-wrapper.h"
 #include <iostream>
+#include <bitset>
 
 int lua_check_num_args(lua_State* l, int n) {
   if (lua_gettop(l) != n) {
@@ -240,6 +241,16 @@ int LuaRunner::stopJack(lua_State* l) {
   auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, 1));
   luaRunner->audioSink->stop();
   return 0;
+}
+
+int LuaRunner::setPanelLights(lua_State* l) {
+  lua_check_num_args(l, 2);
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, 1));
+  int state = luaL_checknumber(l, 2);
+  std::bitset<8> bitState(state);
+  luaRunner->panel->setDeviceState(LED_ARRAY, bitState);
+  return 0;
+
 }
 
 int LuaRunner::loadModule(lua_State* l) {

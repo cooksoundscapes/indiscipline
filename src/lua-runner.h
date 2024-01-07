@@ -38,7 +38,7 @@ class LuaRunner : public LuaRunnerBase {
   void setCurrentPage(std::string p);
   void setDirectPanelControl();
 
-  std::mutex mutex;
+  std::recursive_mutex mutex;
 
   bool firstLoaded = false;
 
@@ -69,4 +69,5 @@ public:
   static int getBufferSize(lua_State*);
   static int startJack(lua_State*);
   static int stopJack(lua_State*);
+  static int setPanelLights(lua_State*);
 };

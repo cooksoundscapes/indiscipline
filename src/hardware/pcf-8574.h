@@ -6,10 +6,10 @@
 class PCF8574 : public DeviceI2C
 {
 protected:
-  std::bitset<8> raw_state;
+	std::bitset<8> raw_state;
 	std::vector<int> state;
 
-  void read_raw_state() {
+	void read_raw_state() {
 		auto response = i2c_smbus_read_byte_data(file, 0xff);
 		if (response < 0) {
 			//std::cerr << "Error reading device" << '\n';
@@ -27,7 +27,11 @@ public:
 	
 	~PCF8574() {}
 
-	virtual const std::vector<int>& read() = 0;
+	virtual const std::vector<int>& read() {return state;}
+
+	void write(std::bitset<8> arr) {
+		i2c_smbus_write_byte(file, arr.to_ullong());
+	}
 };
 
 class EncoderGroup : public PCF8574 {
@@ -50,4 +54,9 @@ public:
 	ButtonArray(int addr) : PCF8574(addr, 8) {}
 
 	const std::vector<int>& read() override;
+};
+
+class LightArray : public PCF8574 {
+public:
+	LightArray(int addr) : PCF8574(addr, 8) {}
 };

@@ -37,6 +37,7 @@ LuaRunner::LuaRunner() {
   loadFunction("load_module", &LuaRunner::loadModule);
   loadFunction("jack_start", &LuaRunner::startJack);
   loadFunction("jack_stop", &LuaRunner::stopJack);
+  loadFunction("set_lights", &LuaRunner::setPanelLights);
 }
 
 LuaRunner::~LuaRunner() {
@@ -56,7 +57,7 @@ std::string LuaRunner::getPath() {
 
 void LuaRunner::loadFile(std::string file)
 {
-  std::lock_guard<std::mutex> lock(mutex);
+  std::lock_guard<std::recursive_mutex> lock(mutex);
 
   auto scriptsDir = getPath();
   auto filepath = scriptsDir + file + ".lua";
@@ -87,14 +88,14 @@ void LuaRunner::loadFile(std::string file)
 }
 
 void LuaRunner::setGlobal(std::string varname, double value) {
-  std::lock_guard<std::mutex> lock(mutex);
+  std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_pushnumber(state, value);
   lua_setglobal(state, varname.c_str());
 }
 
 void LuaRunner::draw() {
-  std::lock_guard<std::mutex> lock(mutex);
+  std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_getglobal(state, DRAW);
 
@@ -105,7 +106,7 @@ void LuaRunner::draw() {
 
 void LuaRunner::loadFunction(std::string name, lua_CFunction fn)
 {
-  std::lock_guard<std::mutex> lock(mutex);
+  std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_pushcfunction(state, fn);
   lua_setglobal(state, name.c_str());
@@ -113,7 +114,7 @@ void LuaRunner::loadFunction(std::string name, lua_CFunction fn)
 
 void LuaRunner::callFunction(std::string name, std::vector<Param>& params)
 {
-  std::lock_guard<std::mutex> lock(mutex);
+  std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_getglobal(state, name.c_str());
   if (lua_isfunction(state, -1)) {
@@ -134,7 +135,7 @@ void LuaRunner::callFunction(std::string name, std::vector<Param>& params)
 
 void LuaRunner::callFunction(std::string name)
 {
-  std::lock_guard<std::mutex> lock(mutex);
+  std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_getglobal(state, name.c_str());
   if (lua_isfunction(state, -1)) {
@@ -146,7 +147,7 @@ void LuaRunner::callFunction(std::string name)
 
 void LuaRunner::setTable(std::string name, std::vector<float>& buff)
 {
-  std::lock_guard<std::mutex> lock(mutex);
+  std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_getglobal(state, SET_TABLE);
   if (!lua_isfunction(state, -1)) {
@@ -185,7 +186,7 @@ void LuaRunner::setDirectPanelControl() {
   if (panel) {
     auto cb = [this](std::string device, int pin, int value)
     {
-      std::lock_guard<std::mutex> lock(mutex);
+      std::lock_guard<std::recursive_mutex> lock(mutex);
 
       lua_getglobal(state, PANEL_INPUT);
       if (lua_isfunction(state, -1)) {

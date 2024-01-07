@@ -84,6 +84,10 @@ void OscServer::init() {
     return;
   }
   thread = lo_server_thread_new(OSC_SERV, error_handler);
+  if (!thread) {
+    std::cerr << "[OscServer] Error: could not create server thread;\n";
+    return;
+  }
 
   // add methods
   lo_server_thread_add_method(thread, "/navigate", "s", navigate_handler, luaRunner.get());

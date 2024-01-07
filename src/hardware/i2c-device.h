@@ -3,6 +3,7 @@
 #include "../main.h"
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 #include <array>
 
 extern "C" {
@@ -28,5 +29,7 @@ public:
 		}
 	}
 
-	virtual ~DeviceI2C() {}	
+	virtual ~DeviceI2C() {
+		close(file);
+	}	
 };
