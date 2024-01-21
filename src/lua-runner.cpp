@@ -182,9 +182,24 @@ void LuaRunner::setCurrentPage(std::string page) {
   }
 }
 
-void LuaRunner::setDirectPanelControl() {
+void LuaRunner::setPanelControls() {
   if (panel) {
-    auto cb = [this](std::string device, int pin, int value)
+    // setup function for send OSC
+    client_osc_addr = lo_address_new(NULL, OSC_CLIENT);
+    auto sendOsc = [this](std::string device, int pin, int value)
+    {
+      // bypass osc if home button is pressed
+      if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == 1) {
+        loadFile(HOME_PAGE);
+        return;
+      }
+      auto path = "/" + device + "/" + std::to_string(pin);
+      lo_send(client_osc_addr, path.c_str(), "f", (float)value);
+    };
+    panel->registerCallback(SEND_OSC, sendOsc);
+
+    // setup function for direct control  
+    auto directControl = [this](std::string device, int pin, int value)
     {
       std::lock_guard<std::recursive_mutex> lock(mutex);
 
@@ -198,6 +213,6 @@ void LuaRunner::setDirectPanelControl() {
         }
       }
     };
-    panel->registerCallback(DIRECT_CONTROL, cb);
+    panel->registerCallback(DIRECT_CONTROL, directControl);
   }
 }

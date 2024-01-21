@@ -12,6 +12,10 @@ Panel::Panel(std::shared_ptr<GPIOBase> gpio)
 	inputDevices.insert({SEQ_BUTTONS, std::make_shared<ButtonArray>(0x23)}); // GPIO 27
 	inputDevices.insert({ENCODERS, std::make_shared<EncoderGroup>(0x27)}); // GPIO 22
 	outputDevices.insert({LED_ARRAY, std::make_shared<LightArray>(0x21)}); // GPIO 4
+
+	inputDevices[NAV_BUTTONS]->read();
+	inputDevices[SEQ_BUTTONS]->read();
+	inputDevices[ENCODERS]->read();
 	
 	// define callback lambdas
 	GPIOBase::InputCallback readI2CDevice = [this](std::string device, int level) {
@@ -27,18 +31,16 @@ Panel::Panel(std::shared_ptr<GPIOBase> gpio)
 		}
 	};
 	// mini mim
-  //gpio->addController(ENCODER_INT, {ENCODERS, readI2CDevice});
-	//gpio->addController(BUTTON_INT, {BUTTONS, readI2CDevice});
-  gpio->addController(17, {NAV_BUTTONS, readI2CDevice});
-  gpio->addController(27, {SEQ_BUTTONS, readI2CDevice});
-  gpio->addController(22, {ENCODERS, readI2CDevice});
-
+	//gpio->addInterrupt(ENCODER_INT, {ENCODERS, readI2CDevice});
+	//gpio->addInterrupt(BUTTON_INT, {BUTTONS, readI2CDevice});
+	gpio->addInterrupt(17, {NAV_BUTTONS, readI2CDevice});
+	gpio->addInterrupt(27, {SEQ_BUTTONS, readI2CDevice});
+	gpio->addInterrupt(22, {ENCODERS, readI2CDevice});
 }
 
 void Panel::setCurrentCallback(std::string cb) {
 	auto it = callbacks.find(cb);
 	if (it != callbacks.end()) {
-		std::cout << "Setting current callback to " << cb << std::endl;
 		currentCallback = std::make_unique<ReadCB>(callbacks[cb]);
 	}
 }

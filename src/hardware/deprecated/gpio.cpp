@@ -16,7 +16,7 @@ GPIO::~GPIO() {
   gpioTerminate();
 }
 
-void GPIO::addController(int pin, controller ctrl) {
+void GPIO::addInterrupt(int pin, controller ctrl) {
   gpioSetMode(pin, PI_INPUT);
   gpioSetPullUpDown(pin, PI_PUD_UP);
   gpioSetAlertFuncEx(pin, default_callback, this);

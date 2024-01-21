@@ -8,7 +8,7 @@ public:
   GPIO();
   ~GPIO();
   
-  void addController(int, controller) override;
+  void addInterrupt(int, controller) override;
   void setPin(int pin, unsigned level) override;
 
 private:

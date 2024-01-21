@@ -11,5 +11,5 @@ public:
 		std::string name;
 		InputCallback action;
 	};
-  virtual void addController(int, controller) = 0;
+  virtual void addInterrupt(int, controller) = 0;
 };

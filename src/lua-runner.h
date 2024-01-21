@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <mutex>
+#include <lo/lo.h>
 #include "lua-runner-base.h"
 #include "audio-sink-base.h"
 #include "hardware/panel-base.h"
@@ -36,11 +37,13 @@ class LuaRunner : public LuaRunnerBase {
 
   std::string currentPage = HOME_PAGE;
   void setCurrentPage(std::string p);
-  void setDirectPanelControl();
+  void setPanelControls();
 
   std::recursive_mutex mutex;
 
   bool firstLoaded = false;
+
+  lo_address client_osc_addr;
 
 public:
   LuaRunner();
@@ -49,7 +52,7 @@ public:
   void setAudioSink(std::shared_ptr<AudioSinkBase> audsnk) { this->audioSink = audsnk; }
   void setPanel(std::shared_ptr<PanelBase> panel) { 
     this->panel = panel;
-    setDirectPanelControl();
+    setPanelControls();
   }
 
   void loadFile(std::string file);

@@ -20,7 +20,7 @@ void GPIO::setPin(int pin, unsigned level) {
 	gpio_write(daemon, pin, level);
 }
 
-void GPIO::addController(int pin, controller ctrl) {
+void GPIO::addInterrupt(int pin, controller ctrl) {
 	set_mode(daemon, pin, PI_INPUT);
 	set_pull_up_down(daemon, pin, PI_PUD_UP);
 	int cb_id = callback_ex(daemon, pin, EITHER_EDGE, default_callback, this);

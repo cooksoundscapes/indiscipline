@@ -77,19 +77,7 @@ int main(int argc, const char** argv) {
     auto panel = std::make_shared<Panel>(gpio);
     luaInterpreter->setPanel(panel);
 
-    // setup function for send OSC
-    lo_address osc_addr = lo_address_new(NULL, OSC_CLIENT);
-    auto sendOsc = [&osc_addr, &luaInterpreter](std::string device, int pin, int value)
-    {
-      // bypass osc if home button is pressed
-      if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == 1) {
-        luaInterpreter->loadFile(HOME_PAGE);
-        return;
-      }
-      auto path = "/" + device + "/" + std::to_string(pin);
-      lo_send(osc_addr, path.c_str(), "f", (float)value);
-    };
-    panel->registerCallback(SEND_OSC, sendOsc);
+
 
     #ifdef USE_SSD1306
       // setup display device
