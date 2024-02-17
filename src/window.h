@@ -16,6 +16,7 @@ class Window : public ScreenBase {
 
   void updateWindow();
   void handleEvents();
+  void handleKeyboardEvent();
   void draw();
 
 public: 

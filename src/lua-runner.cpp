@@ -38,6 +38,34 @@ LuaRunner::LuaRunner() {
   loadFunction("jack_start", &LuaRunner::startJack);
   loadFunction("jack_stop", &LuaRunner::stopJack);
   loadFunction("set_lights", &LuaRunner::setPanelLights);
+
+  // define control callbacks
+  client_osc_addr = lo_address_new(NULL, OSC_CLIENT);
+  sendOsc = [this](std::string device, int pin, int value)
+  {
+    // bypass osc if home button is pressed
+    if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == 1) {
+      loadFile(HOME_PAGE);
+      return;
+    }
+    auto path = "/" + device + "/" + std::to_string(pin);
+    lo_send(client_osc_addr, path.c_str(), "f", (float)value);
+  };
+
+  directControl = [this](std::string device, int pin, int value)
+  {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+
+    lua_getglobal(state, PANEL_INPUT);
+    if (lua_isfunction(state, -1)) {
+      lua_pushstring(state, device.c_str());
+      lua_pushnumber(state, pin);
+      lua_pushnumber(state, value);
+      if (lua_pcall(state, 3, 0, 0) != 0) {
+        std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
+      }
+    }
+  };
 }
 
 LuaRunner::~LuaRunner() {
@@ -182,37 +210,11 @@ void LuaRunner::setCurrentPage(std::string page) {
   }
 }
 
-void LuaRunner::setPanelControls() {
-  if (panel) {
-    // setup function for send OSC
-    client_osc_addr = lo_address_new(NULL, OSC_CLIENT);
-    auto sendOsc = [this](std::string device, int pin, int value)
-    {
-      // bypass osc if home button is pressed
-      if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == 1) {
-        loadFile(HOME_PAGE);
-        return;
-      }
-      auto path = "/" + device + "/" + std::to_string(pin);
-      lo_send(client_osc_addr, path.c_str(), "f", (float)value);
-    };
-    panel->registerCallback(SEND_OSC, sendOsc);
-
-    // setup function for direct control  
-    auto directControl = [this](std::string device, int pin, int value)
-    {
-      std::lock_guard<std::recursive_mutex> lock(mutex);
-
-      lua_getglobal(state, PANEL_INPUT);
-      if (lua_isfunction(state, -1)) {
-        lua_pushstring(state, device.c_str());
-        lua_pushnumber(state, pin);
-        lua_pushnumber(state, value);
-        if (lua_pcall(state, 3, 0, 0) != 0) {
-          std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
-        }
-      }
-    };
-    panel->registerCallback(DIRECT_CONTROL, directControl);
+void LuaRunner::triggerPanelCallback(std::string device, int pin, int value)
+{
+  if (currentPage == HOME_PAGE) {
+    directControl(device, pin, value);
+  } else {
+    sendOsc(device, pin, value);
   }
 }

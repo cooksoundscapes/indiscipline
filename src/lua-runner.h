@@ -37,7 +37,6 @@ class LuaRunner : public LuaRunnerBase {
 
   std::string currentPage = HOME_PAGE;
   void setCurrentPage(std::string p);
-  void setPanelControls();
 
   std::recursive_mutex mutex;
 
@@ -52,7 +51,8 @@ public:
   void setAudioSink(std::shared_ptr<AudioSinkBase> audsnk) { this->audioSink = audsnk; }
   void setPanel(std::shared_ptr<PanelBase> panel) { 
     this->panel = panel;
-    setPanelControls();
+    panel->registerCallback(SEND_OSC, sendOsc);
+    panel->registerCallback(DIRECT_CONTROL, directControl);
   }
 
   void loadFile(std::string file);
@@ -64,7 +64,13 @@ public:
   void callFunction(std::string);
   void setTable(std::string, std::vector<float>&) override;
 
+  void triggerPanelCallback(std::string device, int pin, int value) override;
+
   static std::string getPath();
+
+  // callback control functions
+  std::function<void(std::string, int, int)> sendOsc;
+  std::function<void(std::string, int, int)> directControl;
 
   // registerable lua function with private access
   static int getAudioBuffer(lua_State*);

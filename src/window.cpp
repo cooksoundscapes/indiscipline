@@ -1,3 +1,4 @@
+#include "main.h"
 #include "window.h"
 #include "cairo-wrapper.h"
 #include <iostream>
@@ -80,12 +81,33 @@ void Window::loop()
   screen = NULL;
 }
 
+void Window::handleKeyboardEvent() {
+  if (event_handler.key.repeat > 0) return;
+  auto key = event_handler.key.keysym.sym;
+  switch(key) {
+    case SDLK_UP:
+      luaInterpreter->triggerPanelCallback(ENCODERS, 1, -1);
+      break;
+    case SDLK_DOWN:
+      luaInterpreter->triggerPanelCallback(ENCODERS, 1, 1);
+      break;
+    case SDLK_LEFT:
+      luaInterpreter->triggerPanelCallback(NAV_BUTTONS, 2, -1);
+      break;
+    case SDLK_RIGHT:
+      luaInterpreter->triggerPanelCallback(NAV_BUTTONS, 3, -1);
+      break;
+  };
+}
+
 void Window::handleEvents() {
   if (SDL_PollEvent(&event_handler) != 0) {
     switch (event_handler.type) {
       case SDL_QUIT:
         shouldQuit = true;
         break;
+      case SDL_KEYDOWN:
+        handleKeyboardEvent();
     }
   }
 }

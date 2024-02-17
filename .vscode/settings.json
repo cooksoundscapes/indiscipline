@@ -81,7 +81,8 @@
     "filesystem": "cpp",
     "csignal": "cpp",
     "hash_set": "cpp",
-    "shared_mutex": "cpp"
+    "shared_mutex": "cpp",
+    "complex": "cpp"
   },
   "Lua.diagnostics.globals": [
     "set_source_rgb",
