@@ -14,8 +14,9 @@ Panel::Panel(std::shared_ptr<GPIOBase> gpio)
 	outputDevices.insert({LED_ARRAY, std::make_shared<LightArray>(0x21)}); // GPIO 4
 
 	inputDevices[NAV_BUTTONS]->read();
-	inputDevices[SEQ_BUTTONS]->read();
 	inputDevices[ENCODERS]->read();
+	//megazord
+	inputDevices[SEQ_BUTTONS]->read();
 	
 	// define callback lambdas
 	GPIOBase::InputCallback readI2CDevice = [this](std::string device, int level) {
@@ -32,7 +33,9 @@ Panel::Panel(std::shared_ptr<GPIOBase> gpio)
 	};
 	// mini mim
 	//gpio->addInterrupt(ENCODER_INT, {ENCODERS, readI2CDevice});
-	//gpio->addInterrupt(BUTTON_INT, {BUTTONS, readI2CDevice});
+	//gpio->addInterrupt(BUTTON_INT, {NAV_BUTTONS, readI2CDevice});
+
+	//megazord
 	gpio->addInterrupt(17, {NAV_BUTTONS, readI2CDevice});
 	gpio->addInterrupt(27, {SEQ_BUTTONS, readI2CDevice});
 	gpio->addInterrupt(22, {ENCODERS, readI2CDevice});

@@ -76,8 +76,7 @@ int main(int argc, const char** argv) {
     auto gpio = std::make_shared<GPIO>();
     auto panel = std::make_shared<Panel>(gpio);
     luaInterpreter->setPanel(panel);
-
-
+    std::cout << "GPIO usage enabled;\n";
 
     #ifdef USE_SSD1306
       // setup display device
@@ -107,6 +106,18 @@ int main(int argc, const char** argv) {
 
 	// start osc server and main loop
   oscServer.init();
+  #ifdef USE_FB
+    std::cout << "Using /dev/fb0 as graphics output;\n";
+  #else
+    #ifdef USE_SSD1306
+      std::cout << "Using /dev/spidev0.0 as graphics output (SSD1306);\n";
+    #else
+      std::cout << "Using SDL2 as graphics output;\n";
+    #endif
+  #endif
+
+  
+
   graphics.loop();
   
   return 0;

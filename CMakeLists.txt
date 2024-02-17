@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
 #debugging
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
@@ -27,13 +27,13 @@ set(SOURCES
         src/fb-display.cpp
         src/hardware/panel.cpp
         src/hardware/pcf-8574.cpp
-        #src/hardware/gpio.cpp
+        #src/hardware/gpio --> this is for the non daemon library, probably never going to be used
         src/hardware/gpio-daemon.cpp
         src/hardware/ssd1306-spi.cpp
 )
 
 option(USE_GPIO "use gpio" ON)
-option(USE_SSD1306 "use OLED display (spi)" OFF)
+option(USE_SSD1306 "use OLED display (spi)" ON)
 option(USE_FB "use direct framebuffer" OFF)
 
 if (USE_GPIO)
@@ -55,21 +55,8 @@ include_directories(indiscipline /usr/include/cairo)
 # Configuração do executável
 add_executable(indiscipline ${SOURCES})
 
-set(SCRIPTS_DIR "$ENV{HOME}/views")
-message(STATUS "Lua scripts folder will be created at: ${SCRIPTS_DIR}")
-
 install(TARGETS indiscipline DESTINATION /usr/bin)
-#install(DIRECTORY ${CMAKE_SOURCE_DIR}/scripts/ DESTINATION ${SCRIPTS_DIR})
-
-#install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E echo Changing permissions...)
-#              execute_process(COMMAND ${CMAKE_COMMAND} -E echo \"sudo chmod -R 777 ${SCRIPTS_DIR}\")
-#              execute_process(COMMAND ${CMAKE_COMMAND} -E env bash -c \"sudo chmod -R 777 ${SCRIPTS_DIR}\")"
-#)
-
-#file(READ scripts/utils.lua UTILS_CONTENT)
-#string(APPEND UTILS_CONTENT "\npackage.path = \"$ENV{HOME}/views/?.lua;\" .. package.path\n")
-#file(WRITE scripts/utils.lua "${UTILS_CONTENT}")     
-
+ 
 target_link_libraries(indiscipline
         jack
         i2c
