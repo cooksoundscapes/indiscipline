@@ -5,10 +5,15 @@
 
 class LuaRunnerBase
 {
+protected:
+  std::string ipTarget;
+
 public:
   virtual void loadFile(std::string file) = 0;
   virtual void setGlobal(std::string, double) = 0;
   virtual void draw() = 0;
+
+  void setIPTarget(std::string ip) {ipTarget = ip;}
 
   struct Param {
     char type;

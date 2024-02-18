@@ -45,6 +45,7 @@ int main(int argc, const char** argv) {
   // also check if they are valid
   int width = 0;
   int height = 0;
+  std::string ipTarget;
   for (int i = 0; i < argc; i++) {
     if (std::string(argv[i]) == "-w") {
       // avoid segfault if no value is provided
@@ -62,15 +63,21 @@ int main(int argc, const char** argv) {
       }
       height = std::stoi(argv[i+1]);
     }
+    if (std::string(argv[i]) == "-ip") {
+      if (i+1 >= argc) {
+        std::cout << "Invalid target IP\n";
+        return 1;
+      }
+      ipTarget = argv[i+1];
+    }
   }
-
-  // initialize osc server, GPIOs and hardware panel
   OscServer oscServer;
-
-  // setup shared objects for lua and audio
   auto luaInterpreter = std::make_shared<LuaRunner>();
   auto audioSink = std::make_shared<AudioSink>(A_CHANNELS);
   luaInterpreter->setAudioSink(audioSink);
+  if (!ipTarget.empty()) {
+    luaInterpreter->setIPTarget(ipTarget);
+  }
 
   #ifdef USE_GPIO
     auto gpio = std::make_shared<GPIO>();
@@ -96,7 +103,7 @@ int main(int argc, const char** argv) {
     luaInterpreter->setGlobal(SCREEN_H, (height > 0) ? height : WINDOW_HEIGHT);
   #endif
 
-  // setup lua interpreter at graphics driver and OSC
+  // setup lua interpreter at graphics driver and OSC  
   graphics.setLuaInterpreter(luaInterpreter);
   oscServer.setLuaInterpreter(luaInterpreter);
 
@@ -115,8 +122,6 @@ int main(int argc, const char** argv) {
       std::cout << "Using SDL2 as graphics output;\n";
     #endif
   #endif
-
-  
 
   graphics.loop();
   

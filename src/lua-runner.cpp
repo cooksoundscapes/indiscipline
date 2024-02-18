@@ -40,7 +40,11 @@ LuaRunner::LuaRunner() {
   loadFunction("set_lights", &LuaRunner::setPanelLights);
 
   // define control callbacks
-  client_osc_addr = lo_address_new(NULL, OSC_CLIENT);
+  if (ipTarget.empty()) {
+    client_osc_addr = lo_address_new(NULL, OSC_CLIENT);
+  } else {
+    client_osc_addr = lo_address_new(ipTarget.c_str(), OSC_CLIENT);
+  }
   sendOsc = [this](std::string device, int pin, int value)
   {
     // bypass osc if home button is pressed
