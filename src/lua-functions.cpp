@@ -274,3 +274,12 @@ int LuaRunner::loadModule(lua_State* l) {
 
   return 0;
 }
+
+int LuaRunner::setOSCTarget(lua_State* l) {
+  lua_check_num_args(l, 2);
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, 1));
+  const char* ip_addr = luaL_checkstring(l, 2);
+
+  luaRunner->setIPTarget(ip_addr);
+  return 0;
+}

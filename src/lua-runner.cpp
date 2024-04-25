@@ -38,13 +38,26 @@ LuaRunner::LuaRunner() {
   loadFunction("jack_start", &LuaRunner::startJack);
   loadFunction("jack_stop", &LuaRunner::stopJack);
   loadFunction("set_lights", &LuaRunner::setPanelLights);
+  loadFunction("set_osc_target", &LuaRunner::setOSCTarget);
 
   // define control callbacks
+  defineCallbacks();
+}
+
+LuaRunner::~LuaRunner() {
+  lua_close(state);
+}
+
+void LuaRunner::defineCallbacks() {
+  // check if target is other than localhost
   if (ipTarget.empty()) {
     client_osc_addr = lo_address_new(NULL, OSC_CLIENT);
   } else {
+    std::cout << "OSC messages will be sent to address " << ipTarget << '\n';
     client_osc_addr = lo_address_new(ipTarget.c_str(), OSC_CLIENT);
   }
+
+  // Define callback to be sent by every page (other than home)
   sendOsc = [this](std::string device, int pin, int value)
   {
     // bypass osc if home button is pressed
@@ -56,6 +69,7 @@ LuaRunner::LuaRunner() {
     lo_send(client_osc_addr, path.c_str(), "f", (float)value);
   };
 
+  // Define callback to be sent on home page
   directControl = [this](std::string device, int pin, int value)
   {
     std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -70,10 +84,6 @@ LuaRunner::LuaRunner() {
       }
     }
   };
-}
-
-LuaRunner::~LuaRunner() {
-  lua_close(state);
 }
 
 std::string LuaRunner::getPath() {

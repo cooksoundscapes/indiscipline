@@ -44,6 +44,8 @@ class LuaRunner : public LuaRunnerBase {
 
   lo_address client_osc_addr;
 
+  void defineCallbacks();
+
 public:
   LuaRunner();
   ~LuaRunner();
@@ -66,6 +68,11 @@ public:
 
   void triggerPanelCallback(std::string device, int pin, int value) override;
 
+  void setIPTarget(std::string ip) {
+    LuaRunnerBase::setIPTarget(ip);
+    defineCallbacks();
+  }
+
   static std::string getPath();
 
   // callback control functions
@@ -79,4 +86,5 @@ public:
   static int startJack(lua_State*);
   static int stopJack(lua_State*);
   static int setPanelLights(lua_State*);
+  static int setOSCTarget(lua_State*);
 };
