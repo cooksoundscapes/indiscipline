@@ -109,6 +109,8 @@
     "create_surface",
     "finish_surface",
     "draw_surface",
-    "destroy_surface"
+    "destroy_surface",
+    "jack_start",
+    "jack_stop"
   ]
 }
