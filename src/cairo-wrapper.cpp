@@ -44,6 +44,11 @@ std::unordered_map<std::string, cairo_operator_t> Cairo::operators = {
   {"hsl_color", CAIRO_OPERATOR_HSL_COLOR},
   {"hsl_luminosity", CAIRO_OPERATOR_HSL_LUMINOSITY}
 };
+std::unordered_map<std::string, cairo_line_cap_t> Cairo::lineCaps = {
+  {"butt", CAIRO_LINE_CAP_BUTT},
+  {"round", CAIRO_LINE_CAP_ROUND},
+  {"square", CAIRO_LINE_CAP_SQUARE}
+};
 
 int Cairo::getStrideForWidth(int width) {
   return cairo_format_stride_for_width(defaultFormat, width);
@@ -117,10 +122,13 @@ void Cairo::fill() {
 void Cairo::stroke() {
   cairo_stroke(cr);
 }
-
-void Cairo::setOperator(std::string op) {
+void Cairo::set_operator(std::string op) {
   if (operators.find(op) == operators.end()) return;
   cairo_set_operator(cr, operators[op]);
+}
+void Cairo::set_line_cap(std::string type) {
+  if (lineCaps.find(type) == lineCaps.end()) return;
+  cairo_set_line_cap(cr, lineCaps[type]);
 }
 
 void Cairo::text(TextParams& params)
@@ -160,10 +168,10 @@ void Cairo::text(TextParams& params)
   g_object_unref(layout);
 }
 
-void Cairo::createAdditionalSurface(std::string name, double w, double h) {
+void Cairo::create_additional_surface(std::string name, double w, double h) {
   auto it = extraSurfaces.find(name);
   if (it != extraSurfaces.end()) {
-    destroySurface(name);
+    destroy_surface(name);
   }
 
   extraSurfaces.insert({
@@ -174,7 +182,7 @@ void Cairo::createAdditionalSurface(std::string name, double w, double h) {
   cairo_close_path(cr);
 }
 
-void Cairo::drawSurface(std::string name, double x, double y)
+void Cairo::draw_surface(std::string name, double x, double y)
 {
   auto it = extraSurfaces.find(name);
   if (it == extraSurfaces.end()) return;
@@ -183,7 +191,7 @@ void Cairo::drawSurface(std::string name, double x, double y)
   cairo_paint(cr);
 }
 
-void Cairo::destroySurface(std::string name) {
+void Cairo::destroy_surface(std::string name) {
   auto it = extraSurfaces.find(name);
   if (it == extraSurfaces.end()) return;
 

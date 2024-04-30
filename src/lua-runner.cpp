@@ -31,7 +31,10 @@ LuaRunner::LuaRunner() {
   loadFunction("create_surface", &_create_surface);
   loadFunction("draw_surface", &_draw_surface);
   loadFunction("destroy_surface", &_destroy_surface);
+  loadFunction("set_line_cap", &_set_line_cap);
   loadFunction("hex", &hexToRGB);
+
+  // those depend on a self reference
   loadFunction("get_audio_buffer", &LuaRunner::getAudioBuffer);
   loadFunction("get_buffer_size", &LuaRunner::getBufferSize);
   loadFunction("load_module", &LuaRunner::loadModule);

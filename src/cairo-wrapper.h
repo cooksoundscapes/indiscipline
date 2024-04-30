@@ -9,6 +9,7 @@ namespace Cairo {
   extern std::unordered_map<std::string, cairo_surface_t*> extraSurfaces;
   extern _cairo_format defaultFormat;
   extern std::unordered_map<std::string, cairo_operator_t> operators;
+  extern std::unordered_map<std::string, cairo_line_cap_t> lineCaps;
 
   extern int getStrideForWidth(int w);
   extern void createSurfaceForData(int w, int h, unsigned char* pixels, int stride);
@@ -28,11 +29,12 @@ namespace Cairo {
   extern void paint();
   extern void fill();
   extern void stroke();
-  extern void setOperator(std::string);
+  extern void set_operator(std::string);
+  extern void set_line_cap(std::string);
 
-  extern void createAdditionalSurface(std::string, double, double);
-  extern void drawSurface(std::string, double, double);
-  extern void destroySurface(std::string);
+  extern void create_additional_surface(std::string, double, double);
+  extern void draw_surface(std::string, double, double);
+  extern void destroy_surface(std::string);
 
   struct TextParams {
     const char* text;

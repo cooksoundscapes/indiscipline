@@ -27,6 +27,7 @@ extern int _text(lua_State* l);
 extern int _create_surface(lua_State* l);
 extern int _draw_surface(lua_State* l);
 extern int _destroy_surface(lua_State* l);
+extern int _set_line_cap(lua_State* l);
 
 extern int hexToRGB(lua_State* l);
 

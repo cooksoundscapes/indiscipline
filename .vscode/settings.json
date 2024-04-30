@@ -82,7 +82,8 @@
     "csignal": "cpp",
     "hash_set": "cpp",
     "shared_mutex": "cpp",
-    "complex": "cpp"
+    "complex": "cpp",
+    "coroutine": "cpp"
   },
   "Lua.diagnostics.globals": [
     "set_source_rgb",
@@ -110,6 +111,7 @@
     "finish_surface",
     "draw_surface",
     "destroy_surface",
+    "set_line_cap",
     "jack_start",
     "jack_stop"
   ]
