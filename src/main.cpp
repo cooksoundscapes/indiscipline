@@ -41,43 +41,56 @@ void signalHandler(int signal) {
   }
 }
 
-int main() {
-  // search for config file in $HOME
+void setup(int& w, int& h, std::string& luapath, std::string& iptarget)
+{
   std::string home = getenv("HOME");
   if (home.empty()) {
   	std::cerr << "Invalid $HOME env variable, exiting.\n";
   	exit(1);
   }
-  int width = 320;
-  int height = 240;
-  std::string luaPath = home + "/views";
-  std::string ipTarget;
+  #ifdef USE_SSD1306
+    w = OLED_DISPLAY_WIDTH;
+    h = OLED_DISPLAY_HEIGHT;
+  #else
+    w = WINDOW_WIDTH;
+    h = WINDOW_HEIGHT;
+  #endif
+
+  luapath = home + "/views";
   std::string configPath = home + "/.bouncersettings";
-  
-  std::ifstream handler(configPath.c_str());
-  std::string line;
+
   if (handler.is_open()) {
     while (std::getline(handler, line)) {
-	  auto s = line.find("=");
-	  std::string key = line.substr(0U, s);
-	  std::string value = line.substr(s+1, std::string::npos);
-	  key.erase(key.find_last_not_of(' ')+1);
-	  key.erase(0, key.find_first_not_of(' '));
-	  value.erase(value.find_last_not_of(' ')+1);
-  	  value.erase(0, value.find_first_not_of(' '));
-	  if (key == "width") {
-	  	width = std::stoi(value);
-	  } else if (key == "height") {
-	  	height = std::stoi(value);
-	  } else if (key == "path") {
-	  	if (value[0] == '~') {
-	  	  value.erase(0,1);
-	  	  value = home + value;
-	  	}
-	  	luaPath = value + '/';
-	  }
+      auto s = line.find("=");
+      std::string key = line.substr(0U, s);
+      std::string value = line.substr(s+1, std::string::npos);
+      key.erase(key.find_last_not_of(' ')+1);
+      key.erase(0, key.find_first_not_of(' '));
+      value.erase(value.find_last_not_of(' ')+1);
+        value.erase(0, value.find_first_not_of(' '));
+      if (key == "width") {
+        width = std::stoi(value);
+      } else if (key == "height") {
+        height = std::stoi(value);
+      } else if (key == "lua-path") {
+        if (value[0] == '~') {
+          value.erase(0,1);
+          value = home + value;
+        }
+        luaPath = value + '/';
+      } else if (key == "ip-target") {
+        iptarget = value;
+      }
     }
   }
+}
+
+int main()
+{
+  int width, height;
+  std::string luaPath, ipTarget;
+  setup(width, height, luaPath, ipTarget);
+
   std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
 
   OscServer oscServer;
