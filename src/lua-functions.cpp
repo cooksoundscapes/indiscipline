@@ -259,7 +259,7 @@ int LuaRunner::loadModule(lua_State* l) {
   const char* file = luaL_checkstring(l, 2);
 
   luaRunner->setCurrentPage(file);
-  auto path = getPath() + file + ".lua";
+  auto path = luaRunner->getPath() + file + ".lua";
 
   lua_getglobal(l, CLEANUP);
   if (lua_isfunction(l, -1)) {

@@ -58,19 +58,19 @@ add_executable(indiscipline ${SOURCES})
 install(TARGETS indiscipline DESTINATION /usr/bin)
  
 target_link_libraries(indiscipline
-        jack
-        i2c
-        pigpio
-        pigpiod_if2
-        rt
-        lo
-        lua
-        SDL2
-        SDL2_image
-        SDL2_ttf
-        cairo
-        pango-1.0
-        glib-2.0
-        gobject-2.0
-        pangocairo-1.0
+    jack
+    i2c
+    pigpio
+    pigpiod_if2
+    rt
+    lo
+    lua
+    SDL2
+    SDL2_image
+    SDL2_ttf
+    cairo
+    pango-1.0
+    glib-2.0
+    gobject-2.0
+    pangocairo-1.0
 )

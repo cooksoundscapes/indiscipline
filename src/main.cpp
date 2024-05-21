@@ -22,6 +22,7 @@
 #include <lo/lo.h>
 #include <functional>
 #include <memory>
+#include <fstream>
 
 // define main graphics driver globally
 #ifdef USE_SSD1306
@@ -40,41 +41,50 @@ void signalHandler(int signal) {
   }
 }
 
-int main(int argc, const char** argv) {
-  // retrieve args "-w" and "-h" and their values,
-  // also check if they are valid
-  int width = 0;
-  int height = 0;
+int main() {
+  // search for config file in $HOME
+  std::string home = getenv("HOME");
+  if (home.empty()) {
+  	std::cerr << "Invalid $HOME env variable, exiting.\n";
+  	exit(1);
+  }
+  int width = 320;
+  int height = 240;
+  std::string luaPath = home + "/views";
   std::string ipTarget;
-  for (int i = 0; i < argc; i++) {
-    if (std::string(argv[i]) == "-w") {
-      // avoid segfault if no value is provided
-      if (i+1 >= argc) {
-        std::cout << "Invalid width value\n";
-        return 1;
-      }
-      width = std::stoi(argv[i+1]);
-    }
-    if (std::string(argv[i]) == "-h") {
-      // avoid segfault if no value is provided
-      if (i+1 >= argc) {
-        std::cout << "Invalid height value\n";
-        return 1;
-      }
-      height = std::stoi(argv[i+1]);
-    }
-    if (std::string(argv[i]) == "-ip") {
-      if (i+1 >= argc) {
-        std::cout << "Invalid target IP\n";
-        return 1;
-      }
-      ipTarget = argv[i+1];
+  std::string configPath = home + "/.bouncersettings";
+  
+  std::ifstream handler(configPath.c_str());
+  std::string line;
+  if (handler.is_open()) {
+    while (std::getline(handler, line)) {
+	  auto s = line.find("=");
+	  std::string key = line.substr(0U, s);
+	  std::string value = line.substr(s+1, std::string::npos);
+	  key.erase(key.find_last_not_of(' ')+1);
+	  key.erase(0, key.find_first_not_of(' '));
+	  value.erase(value.find_last_not_of(' ')+1);
+  	  value.erase(0, value.find_first_not_of(' '));
+	  if (key == "width") {
+	  	width = std::stoi(value);
+	  } else if (key == "height") {
+	  	height = std::stoi(value);
+	  } else if (key == "path") {
+	  	if (value[0] == '~') {
+	  	  value.erase(0,1);
+	  	  value = home + value;
+	  	}
+	  	luaPath = value + '/';
+	  }
     }
   }
+  std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
+
   OscServer oscServer;
   auto luaInterpreter = std::make_shared<LuaRunner>();
   auto audioSink = std::make_shared<AudioSink>(A_CHANNELS);
   luaInterpreter->setAudioSink(audioSink);
+  luaInterpreter->setProjectPath(luaPath);
   if (!ipTarget.empty()) {
     luaInterpreter->setIPTarget(ipTarget);
   }

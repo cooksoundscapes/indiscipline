@@ -36,6 +36,8 @@ class LuaRunner : public LuaRunnerBase {
   std::shared_ptr<PanelBase> panel;
 
   std::string currentPage = HOME_PAGE;
+  std::string projectPath;
+ 
   void setCurrentPage(std::string p);
 
   std::recursive_mutex mutex;
@@ -59,6 +61,7 @@ public:
 
   void loadFile(std::string file);
   void setGlobal(std::string name, double value);
+  void setGlobal(std::string name, std::string value);
 
   void draw() override;
   void loadFunction(std::string name, lua_CFunction fn);
@@ -72,8 +75,13 @@ public:
     LuaRunnerBase::setIPTarget(ip);
     defineCallbacks();
   }
-
-  static std::string getPath();
+  
+  void setProjectPath(std::string path) {
+	  projectPath = path;
+	  setGlobal("stdpath", path);
+  }
+  
+  std::string getPath() {return projectPath;}
 
   // callback control functions
   std::function<void(std::string, int, int)> sendOsc;

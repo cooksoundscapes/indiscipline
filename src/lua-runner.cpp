@@ -86,24 +86,12 @@ void LuaRunner::defineCallbacks() {
   };
 }
 
-std::string LuaRunner::getPath() {
-  const char* homeDir = getenv("HOME");
-  auto scriptsDir = std::string(homeDir) + "/views/";
-
-  if (!std::filesystem::exists(scriptsDir)) {
-    std::cerr << "$HOME/views directory is missing! please create it and try again;\n";
-    exit(1);
-  }
-  return scriptsDir;
-}
-
 void LuaRunner::loadFile(std::string file)
 {
   std::lock_guard<std::recursive_mutex> lock(mutex);
 
-  auto scriptsDir = getPath();
-  auto filepath = scriptsDir + file + ".lua";
-  std::string utils = scriptsDir + LUA_SETUP + ".lua";
+  auto filepath = projectPath + file + ".lua";
+  std::string utils = projectPath + LUA_SETUP + ".lua";
 
   //load global utils
   if (!firstLoaded) {
@@ -133,6 +121,13 @@ void LuaRunner::setGlobal(std::string varname, double value) {
   std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_pushnumber(state, value);
+  lua_setglobal(state, varname.c_str());
+}
+
+void LuaRunner::setGlobal(std::string varname, std::string value) {
+  std::lock_guard<std::recursive_mutex> lock(mutex);
+
+  lua_pushstring(state, value.c_str());
   lua_setglobal(state, varname.c_str());
 }
 
