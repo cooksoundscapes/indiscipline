@@ -41,7 +41,7 @@ void signalHandler(int signal) {
   }
 }
 
-void setup(int& w, int& h, std::string& luapath, std::string& iptarget)
+void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget)
 {
   std::string home = getenv("HOME");
   if (home.empty()) {
@@ -55,11 +55,13 @@ void setup(int& w, int& h, std::string& luapath, std::string& iptarget)
     w = WINDOW_WIDTH;
     h = WINDOW_HEIGHT;
   #endif
+  luaPath = home + "/views/";
 
-  luapath = home + "/views";
   std::string configPath = home + "/.bouncersettings";
+  std::ifstream handler(configPath);
 
   if (handler.is_open()) {
+    std::string line;
     while (std::getline(handler, line)) {
       auto s = line.find("=");
       std::string key = line.substr(0U, s);
@@ -69,17 +71,18 @@ void setup(int& w, int& h, std::string& luapath, std::string& iptarget)
       value.erase(value.find_last_not_of(' ')+1);
         value.erase(0, value.find_first_not_of(' '));
       if (key == "width") {
-        width = std::stoi(value);
+        w = std::stoi(value);
       } else if (key == "height") {
-        height = std::stoi(value);
+        h = std::stoi(value);
       } else if (key == "lua-path") {
         if (value[0] == '~') {
           value.erase(0,1);
           value = home + value;
         }
-        luaPath = value + '/';
+        if (value[value.length()-1] != '/') value += '/';
+        luaPath = value;
       } else if (key == "ip-target") {
-        iptarget = value;
+        ipTarget = value;
       }
     }
   }
