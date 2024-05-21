@@ -93,25 +93,29 @@ void LuaRunner::loadFile(std::string file)
 {
   std::lock_guard<std::recursive_mutex> lock(mutex);
 
-  auto filepath = projectPath + file + ".lua";
-  std::string utils = projectPath + LUA_SETUP + ".lua";
-
-  //load global utils
   if (!firstLoaded) {
-    if (luaL_dofile(state, utils.c_str()) == 0) {
-      std::cout << "Successfully loaded " << utils << std::endl;
+    // include project path to LUA_PATH
+    std::string setPkgCommand = "package.path = \"" + projectPath + "?.lua;\" .. package.path";
+	  luaL_dostring(state, setPkgCommand.c_str());
+    // load $lua_path/setup.lua
+    std::string luaSetupPath = projectPath + LUA_SETUP + ".lua";
+    if (luaL_dofile(state, luaSetupPath.c_str()) == 0) {
+      std::cout << "Successfully loaded " << luaSetupPath << std::endl;
     } else {
-      std::cerr << "Failed to load script " << utils << ": " << lua_tostring(state, -1) << std::endl;
+      std::cerr << "Failed to load script " << luaSetupPath << ": " << lua_tostring(state, -1) << std::endl;
     }
     firstLoaded = true;
   }
 
+  // call "Cleanup" function declared at lua scripts
   lua_getglobal(state, CLEANUP);
   if (lua_isfunction(state, -1)) {
     if (lua_pcall(state, 0, 0, 0) != 0) {
       std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
     }
   }
+
+  auto filepath = projectPath + file + ".lua";
 
   if (luaL_dofile(state, filepath.c_str()) != 0) {
     std::cerr << "Failed to load script " << filepath << ": " << lua_tostring(state, -1) << std::endl;

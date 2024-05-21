@@ -79,7 +79,6 @@ public:
   
   void setProjectPath(std::string path) {
 	  projectPath = path;
-	  setGlobal("stdpath", path);
   }
   
   std::string getPath() {return projectPath;}
