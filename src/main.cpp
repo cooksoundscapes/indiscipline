@@ -20,7 +20,6 @@
 #include <string>
 #include <csignal>
 #include <lo/lo.h>
-#include <functional>
 #include <memory>
 #include <fstream>
 
@@ -41,7 +40,7 @@ void signalHandler(int signal) {
   }
 }
 
-void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget)
+void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget, int& audio_channels)
 {
   std::string home = getenv("HOME");
   if (home.empty()) {
@@ -56,6 +55,7 @@ void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget)
     h = WINDOW_HEIGHT;
   #endif
   luaPath = home + "/views/";
+  audio_channels = A_CHANNELS;
 
   std::string configPath = home + "/.bouncersettings";
   std::ifstream handler(configPath);
@@ -83,6 +83,8 @@ void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget)
         luaPath = value;
       } else if (key == "ip-target") {
         ipTarget = value;
+      } else if (key == "audio-channels") {
+        audio_channels = std::stoi(value);
       }
     }
   }
@@ -90,15 +92,16 @@ void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget)
 
 int main()
 {
-  int width, height;
+  int width, height, audio_channels;
   std::string luaPath, ipTarget;
-  setup(width, height, luaPath, ipTarget);
+  setup(width, height, luaPath, ipTarget, audio_channels);
 
   std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
 
   OscServer oscServer;
   auto luaInterpreter = std::make_shared<LuaRunner>();
-  auto audioSink = std::make_shared<AudioSink>(A_CHANNELS);
+  auto audioSink = std::make_shared<AudioSink>(audio_channels);
+
   luaInterpreter->setAudioSink(audioSink);
   luaInterpreter->setProjectPath(luaPath);
   if (!ipTarget.empty()) {

@@ -1,8 +1,6 @@
 #include "lua-runner.h"
 #include <iostream>
 #include <vector>
-#include <sstream>
-#include <filesystem>
 #include <cstdlib>
 
 LuaRunner::LuaRunner() {
