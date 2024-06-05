@@ -3,11 +3,16 @@
 #include <vector>
 #include <cstdlib>
 
-LuaRunner::LuaRunner(int w, int h, std::string path) {
+LuaRunner::LuaRunner(int w, int h, std::string path, std::string ip) {
   projectPath = path;
   screen_w = w;
   screen_h = h;
+  ipTarget = ip;
+  // initialize lua state and register all globals and functions
   init();
+
+  // define control callbacks
+  defineCallbacks();
 }
 
 void LuaRunner::init() {
@@ -18,7 +23,11 @@ void LuaRunner::init() {
   // expose lua interpreter class to the scripts
   lua_pushlightuserdata(state, this);
   lua_setglobal(state, "app");
+  // register screen size globals for UI reference
+  setGlobal(SCREEN_W, screen_w);
+  setGlobal(SCREEN_H, screen_h);
 
+  // cairo drawing functions
   loadFunction("set_source_rgb", &_set_source_rgb);
   loadFunction("set_source_rgba", &_set_source_rgba);
   loadFunction("new_path", &_new_path);
@@ -49,16 +58,10 @@ void LuaRunner::init() {
   loadFunction("set_lights", &LuaRunner::setPanelLights);
   loadFunction("set_osc_target", &LuaRunner::setOSCTarget);
 
-  // define control callbacks
-  defineCallbacks();
-
-  setGlobal(SCREEN_W, screen_w);
-  setGlobal(SCREEN_H, screen_h);
-
   // include project path to LUA_PATH
   std::string setPkgCommand = "package.path = \"" + projectPath + "?.lua;\" .. package.path";
-
   luaL_dostring(state, setPkgCommand.c_str());
+
   // load $lua_path/setup.lua
   std::string luaSetupPath = projectPath + LUA_SETUP + ".lua";
   if (luaL_dofile(state, luaSetupPath.c_str()) == 0) {
@@ -90,7 +93,7 @@ void LuaRunner::defineCallbacks() {
     client_osc_addr = lo_address_new(ipTarget.c_str(), OSC_CLIENT);
   }
 
-  // Define callback to be sent by every page (other than home)
+  // Define callback to be sent at every page (other than home)
   sendOsc = [this](std::string device, int pin, int value)
   {
     // bypass osc if home button is pressed

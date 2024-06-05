@@ -99,14 +99,10 @@ int main()
   std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
 
   OscServer oscServer;
-  auto luaInterpreter = std::make_shared<LuaRunner>(width, height, luaPath);
+  auto luaInterpreter = std::make_shared<LuaRunner>(width, height, luaPath, ipTarget);
   auto audioSink = std::make_shared<AudioSink>(audio_channels);
 
   luaInterpreter->setAudioSink(audioSink);
-  luaInterpreter->setProjectPath(luaPath);
-  if (!ipTarget.empty()) {
-    luaInterpreter->setIPTarget(ipTarget);
-  }
 
   #ifdef USE_GPIO
     auto gpio = std::make_shared<GPIO>();

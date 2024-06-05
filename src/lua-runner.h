@@ -52,7 +52,7 @@ class LuaRunner : public LuaRunnerBase {
   int screen_w, screen_h;
 
 public:
-  LuaRunner(int w, int h, std::string path);
+  LuaRunner(int w, int h, std::string path, std::string ipTarget);
   ~LuaRunner();
 
   void setAudioSink(std::shared_ptr<AudioSinkBase> audsnk) { this->audioSink = audsnk; }
