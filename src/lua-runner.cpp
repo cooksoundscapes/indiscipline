@@ -3,7 +3,14 @@
 #include <vector>
 #include <cstdlib>
 
-LuaRunner::LuaRunner() {
+LuaRunner::LuaRunner(int w, int h, std::string path) {
+  projectPath = path;
+  screen_w = w;
+  screen_h = h;
+  init();
+}
+
+void LuaRunner::init() {
   state = luaL_newstate();
   luaL_openlibs(state);
   std::cout << "Initialized Lua API - version " << lua_version(NULL) << std::endl;
@@ -14,6 +21,7 @@ LuaRunner::LuaRunner() {
 
   loadFunction("set_source_rgb", &_set_source_rgb);
   loadFunction("set_source_rgba", &_set_source_rgba);
+  loadFunction("new_path", &_new_path);
   loadFunction("rectangle", &_rectangle);
   loadFunction("arc", &_arc);
   loadFunction("move_to", &_move_to);
@@ -30,7 +38,7 @@ LuaRunner::LuaRunner() {
   loadFunction("draw_surface", &_draw_surface);
   loadFunction("destroy_surface", &_destroy_surface);
   loadFunction("set_line_cap", &_set_line_cap);
-  loadFunction("hex", &hexToRGB);
+  loadFunction("hex", &_hex_to_rgb);
 
   // those depend on a self reference
   loadFunction("get_audio_buffer", &LuaRunner::getAudioBuffer);
@@ -43,10 +51,34 @@ LuaRunner::LuaRunner() {
 
   // define control callbacks
   defineCallbacks();
+
+  setGlobal(SCREEN_W, screen_w);
+  setGlobal(SCREEN_H, screen_h);
+
+  // include project path to LUA_PATH
+  std::string setPkgCommand = "package.path = \"" + projectPath + "?.lua;\" .. package.path";
+
+  luaL_dostring(state, setPkgCommand.c_str());
+  // load $lua_path/setup.lua
+  std::string luaSetupPath = projectPath + LUA_SETUP + ".lua";
+  if (luaL_dofile(state, luaSetupPath.c_str()) == 0) {
+    std::cout << "Successfully loaded " << luaSetupPath << std::endl;
+  } else {
+    std::cerr << "Failed to load script " << luaSetupPath << ": " << lua_tostring(state, -1) << std::endl;
+  }
 }
 
 LuaRunner::~LuaRunner() {
   lua_close(state);
+}
+
+void LuaRunner::resetLuaState() {
+  std::lock_guard<std::recursive_mutex> lock(mutex);
+  if (state == nullptr) return;
+
+  lua_close(state); // close state
+  init(); // call the constructor again
+  loadFile(HOME_PAGE); // load home
 }
 
 void LuaRunner::defineCallbacks() {
@@ -90,20 +122,6 @@ void LuaRunner::defineCallbacks() {
 void LuaRunner::loadFile(std::string file)
 {
   std::lock_guard<std::recursive_mutex> lock(mutex);
-
-  if (!firstLoaded) {
-    // include project path to LUA_PATH
-    std::string setPkgCommand = "package.path = \"" + projectPath + "?.lua;\" .. package.path";
-	  luaL_dostring(state, setPkgCommand.c_str());
-    // load $lua_path/setup.lua
-    std::string luaSetupPath = projectPath + LUA_SETUP + ".lua";
-    if (luaL_dofile(state, luaSetupPath.c_str()) == 0) {
-      std::cout << "Successfully loaded " << luaSetupPath << std::endl;
-    } else {
-      std::cerr << "Failed to load script " << luaSetupPath << ": " << lua_tostring(state, -1) << std::endl;
-    }
-    firstLoaded = true;
-  }
 
   // call "Cleanup" function declared at lua scripts
   lua_getglobal(state, CLEANUP);

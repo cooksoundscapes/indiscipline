@@ -99,7 +99,7 @@ int main()
   std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
 
   OscServer oscServer;
-  auto luaInterpreter = std::make_shared<LuaRunner>();
+  auto luaInterpreter = std::make_shared<LuaRunner>(width, height, luaPath);
   auto audioSink = std::make_shared<AudioSink>(audio_channels);
 
   luaInterpreter->setAudioSink(audioSink);
@@ -124,13 +124,6 @@ int main()
   if (width > 0 && height > 0) {
     graphics.setSize(width, height);
   }
-  #ifdef USE_SSD1306
-    luaInterpreter->setGlobal(SCREEN_W, (width > 0) ? width : OLED_DISPLAY_WIDTH);
-    luaInterpreter->setGlobal(SCREEN_H, (height > 0) ? height : OLED_DISPLAY_HEIGHT);
-  #else
-    luaInterpreter->setGlobal(SCREEN_W, (width > 0) ? width : WINDOW_WIDTH);
-    luaInterpreter->setGlobal(SCREEN_H, (height > 0) ? height : WINDOW_HEIGHT);
-  #endif
 
   // setup lua interpreter at graphics driver and OSC  
   graphics.setLuaInterpreter(luaInterpreter);

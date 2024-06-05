@@ -12,6 +12,7 @@
 //----functions to be registered in lua state
 extern int _set_source_rgb(lua_State* l); 
 extern int _set_source_rgba(lua_State* l); 
+extern int _new_path(lua_State* l);
 extern int _rectangle(lua_State* l);
 extern int _arc(lua_State* l);
 extern int _move_to(lua_State* l);
@@ -28,8 +29,7 @@ extern int _create_surface(lua_State* l);
 extern int _draw_surface(lua_State* l);
 extern int _destroy_surface(lua_State* l);
 extern int _set_line_cap(lua_State* l);
-
-extern int hexToRGB(lua_State* l);
+extern int _hex_to_rgb(lua_State* l);
 
 class LuaRunner : public LuaRunnerBase {
   lua_State* state;
@@ -38,19 +38,21 @@ class LuaRunner : public LuaRunnerBase {
 
   std::string currentPage = HOME_PAGE;
   std::string projectPath;
+
+  void init();
  
   void setCurrentPage(std::string p);
 
   std::recursive_mutex mutex;
 
-  bool firstLoaded = false;
-
   lo_address client_osc_addr;
 
   void defineCallbacks();
 
+  int screen_w, screen_h;
+
 public:
-  LuaRunner();
+  LuaRunner(int w, int h, std::string path);
   ~LuaRunner();
 
   void setAudioSink(std::shared_ptr<AudioSinkBase> audsnk) { this->audioSink = audsnk; }
@@ -70,6 +72,8 @@ public:
   void callFunction(std::string);
   void setTable(std::string, std::vector<float>&) override;
 
+  void resetLuaState() override;
+
   void triggerPanelCallback(std::string device, int pin, int value) override;
 
   void setIPTarget(std::string ip) {
@@ -79,6 +83,14 @@ public:
   
   void setProjectPath(std::string path) {
 	  projectPath = path;
+  }
+
+  void setScreenSize(int w, int h) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    screen_w = w;
+    screen_h = h;
+    setGlobal(SCREEN_W, w);
+    setGlobal(SCREEN_H, h);
   }
   
   std::string getPath() {return projectPath;}

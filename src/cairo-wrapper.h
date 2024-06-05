@@ -1,5 +1,6 @@
 #pragma once
 #include <cairo/cairo.h>
+#include <pango/pangocairo.h>
 #include <unordered_map>
 #include <string>
 
@@ -10,6 +11,7 @@ namespace Cairo {
   extern _cairo_format defaultFormat;
   extern std::unordered_map<std::string, cairo_operator_t> operators;
   extern std::unordered_map<std::string, cairo_line_cap_t> lineCaps;
+  extern std::unordered_map<std::string, PangoAlignment> textAlignments;
 
   extern int getStrideForWidth(int w);
   extern void createSurfaceForData(int w, int h, unsigned char* pixels, int stride);
@@ -19,6 +21,7 @@ namespace Cairo {
 
   extern void set_source_rgb(double, double, double);
   extern void set_source_rgba(double, double, double, double);
+  extern void new_path();
   extern void rectangle(double, double, double, double);
   extern void arc(double, double, double, double, double);
   extern void move_to(double, double);
@@ -39,6 +42,7 @@ namespace Cairo {
   struct TextParams {
     const char* text;
     const char* font;
+    const char * alignment;
     int size;
     int width;
     bool centered;

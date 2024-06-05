@@ -2,6 +2,8 @@
 #include "cairo-wrapper.h"
 #include <iostream>
 #include <bitset>
+#include <lauxlib.h>
+#include <lua.h>
 
 int lua_check_num_args(lua_State* l, int n) {
   if (lua_gettop(l) != n) {
@@ -28,6 +30,11 @@ int _set_source_rgba(lua_State* l) {
   double a = luaL_checknumber(l, 4);
   Cairo::set_source_rgba(r, g, b, a);
   lua_settop(l, 0);
+  return 0;
+}
+
+int _new_path(lua_State* l) {
+  Cairo::new_path();
   return 0;
 }
 
@@ -131,7 +138,8 @@ int _text(lua_State* l) {
   double size = luaL_optnumber(l, 2, 0);
   const char* font = luaL_optstring(l, 3, "");
   double width = luaL_optnumber(l, 4, 0);
-  bool centered = luaL_optnumber(l, 5, 0);
+  const char* alignment = luaL_optstring(l, 5, "");
+  bool centered = luaL_optnumber(l, 6, 0);
 
   lua_getglobal(l, "FontSize");
   if (lua_isnumber(l, -1) && size == 0) {
@@ -150,6 +158,9 @@ int _text(lua_State* l) {
       font = "Sans";
   }
 
+  if (strlen(alignment) != 0) {
+    params.alignment = alignment;
+  }
   params.text = txt;
   params.size = size;
   params.font = font;
@@ -199,7 +210,7 @@ int _set_line_cap(lua_State* l) {
   return 0;
 }
 
-int hexToRGB(lua_State* l) {
+int _hex_to_rgb(lua_State* l) {
   lua_check_num_args(l, 1);
   const char* hex_v = luaL_checkstring(l, 1);
   int red{0}, green{0}, blue{0};

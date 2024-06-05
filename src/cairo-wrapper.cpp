@@ -1,7 +1,5 @@
 #include "cairo-wrapper.h"
-#include <iostream>
 #include <string>
-#include <pango/pangocairo.h>
 
 cairo_t* Cairo::cr = nullptr;
 cairo_surface_t* Cairo::surface = nullptr;
@@ -49,6 +47,11 @@ std::unordered_map<std::string, cairo_line_cap_t> Cairo::lineCaps = {
   {"round", CAIRO_LINE_CAP_ROUND},
   {"square", CAIRO_LINE_CAP_SQUARE}
 };
+std::unordered_map<std::string, PangoAlignment> Cairo::textAlignments = {
+  {"left", PANGO_ALIGN_LEFT},
+  {"right", PANGO_ALIGN_RIGHT},
+  {"center", PANGO_ALIGN_CENTER}
+};
 
 int Cairo::getStrideForWidth(int width) {
   return cairo_format_stride_for_width(defaultFormat, width);
@@ -91,6 +94,9 @@ void Cairo::set_source_rgb(double r, double g, double b) {
 } 
 void Cairo::set_source_rgba(double r, double g, double b, double a) {
   cairo_set_source_rgba(cr, r, g, b, a);
+}
+void Cairo::new_path() {
+  cairo_new_path(cr);
 }
 void Cairo::rectangle(double x, double y, double w, double h) {
   cairo_rectangle(cr, x, y, w, h);
@@ -143,9 +149,11 @@ void Cairo::text(TextParams& params)
     cairo_font_options_destroy(options);
   }
   //-----------------------
-
   PangoLayout* layout = pango_cairo_create_layout(cr);
   pango_layout_set_text(layout, params.text, -1);
+  if (textAlignments.find(params.alignment) != textAlignments.end()) {
+    pango_layout_set_alignment(layout, textAlignments[params.alignment]);
+  }
 
   std::string font = std::string(params.font) + " " + std::to_string(params.size);
   PangoFontDescription* desc = pango_font_description_from_string(font.c_str());

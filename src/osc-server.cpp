@@ -12,8 +12,6 @@ static int
 navigate_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_message data, void* userData)
 {
   auto luaRunner = (LuaRunnerBase*) userData;
-  std::vector<LuaRunnerBase::Param> params = {};
-
   auto target = &argv[0]->s;
   luaRunner->loadFile(target);
   return 0;
@@ -78,6 +76,17 @@ buffer_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_mes
   return 0;
 }
 
+static int 
+reset_lua_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_message data, void* userData)
+{
+  auto luaRunner = (LuaRunnerBase*) userData;
+  luaRunner->resetLuaState();
+  return 0;
+}
+
+/**
+Main function
+*/
 void OscServer::init() {
   if (!luaRunner) {
     std::cerr << "[OscServer] Error: missing Lua Interpreter;\n";
@@ -94,6 +103,7 @@ void OscServer::init() {
   lo_server_thread_add_method(thread, "/param", NULL, param_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/buffer", NULL, buffer_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/panel", "sff", direct_input_handler, luaRunner.get());
+  lo_server_thread_add_method(thread, "/reset", NULL, reset_lua_handler, luaRunner.get());
 
   // server start
   lo_server_thread_start(thread);
