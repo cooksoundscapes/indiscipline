@@ -13,6 +13,7 @@
 extern int _set_source_rgb(lua_State* l); 
 extern int _set_source_rgba(lua_State* l); 
 extern int _new_path(lua_State* l);
+extern int _close_path(lua_State* l);
 extern int _rectangle(lua_State* l);
 extern int _arc(lua_State* l);
 extern int _move_to(lua_State* l);
@@ -22,6 +23,7 @@ extern int _rel_line_to(lua_State* l);
 extern int _set_line_width(lua_State* l);
 extern int _paint(lua_State* l);
 extern int _fill(lua_State* l);
+extern int _fill_preserve(lua_State* l);
 extern int _stroke(lua_State* l);
 extern int _set_operator(lua_State* l);
 extern int _text(lua_State* l);
@@ -50,6 +52,7 @@ class LuaRunner : public LuaRunnerBase {
   void defineCallbacks();
 
   int screen_w, screen_h;
+  bool shouldPrint = false;
 
 public:
   LuaRunner(int w, int h, std::string path, std::string ipTarget);
@@ -71,6 +74,10 @@ public:
   void callFunction(std::string, std::vector<Param>&) override;
   void callFunction(std::string);
   void setTable(std::string, std::vector<float>&) override;
+  
+  void schedulePrint() override {
+    shouldPrint = true;
+  }
 
   void resetLuaState() override;
 

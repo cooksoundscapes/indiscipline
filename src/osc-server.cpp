@@ -84,6 +84,14 @@ reset_lua_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_
   return 0;
 }
 
+static int 
+print_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_message data, void* userData)
+{
+  auto luaRunner = (LuaRunnerBase*) userData;
+  luaRunner->schedulePrint();
+  return 0;
+}
+
 /**
 Main function
 */
@@ -104,6 +112,7 @@ void OscServer::init() {
   lo_server_thread_add_method(thread, "/buffer", NULL, buffer_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/panel", "sff", direct_input_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/reset", NULL, reset_lua_handler, luaRunner.get());
+  lo_server_thread_add_method(thread, "/print", NULL, print_handler, luaRunner.get());
 
   // server start
   lo_server_thread_start(thread);

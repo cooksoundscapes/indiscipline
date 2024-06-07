@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include "cairo-wrapper.h"
 
 LuaRunner::LuaRunner(int w, int h, std::string path, std::string ip) {
   projectPath = path;
@@ -31,6 +32,7 @@ void LuaRunner::init() {
   loadFunction("set_source_rgb", &_set_source_rgb);
   loadFunction("set_source_rgba", &_set_source_rgba);
   loadFunction("new_path", &_new_path);
+  loadFunction("close_path", &_close_path);
   loadFunction("rectangle", &_rectangle);
   loadFunction("arc", &_arc);
   loadFunction("move_to", &_move_to);
@@ -40,6 +42,7 @@ void LuaRunner::init() {
   loadFunction("text", &_text);
   loadFunction("paint", &_paint);
   loadFunction("fill", &_fill);
+  loadFunction("fill_preserve", &_fill_preserve);
   loadFunction("stroke", &_stroke);
   loadFunction("set_operator", &_set_operator);
   loadFunction("set_line_width", &_set_line_width);
@@ -164,6 +167,10 @@ void LuaRunner::draw() {
 
   if (lua_pcall(state, 0, 0, 0) != 0) {
     std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
+  }
+  if (shouldPrint) {
+    Cairo::print();
+    shouldPrint = false;
   }
 }
 

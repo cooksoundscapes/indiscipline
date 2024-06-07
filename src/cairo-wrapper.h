@@ -19,9 +19,12 @@ namespace Cairo {
   extern void flush();
   extern void clearExtraSurfaces();
 
+  extern void print();
+
   extern void set_source_rgb(double, double, double);
   extern void set_source_rgba(double, double, double, double);
   extern void new_path();
+  extern void close_path();
   extern void rectangle(double, double, double, double);
   extern void arc(double, double, double, double, double);
   extern void move_to(double, double);
@@ -31,6 +34,7 @@ namespace Cairo {
   extern void set_line_width(double);
   extern void paint();
   extern void fill();
+  extern void fill_preserve();
   extern void stroke();
   extern void set_operator(std::string);
   extern void set_line_cap(std::string);

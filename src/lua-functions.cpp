@@ -38,6 +38,11 @@ int _new_path(lua_State* l) {
   return 0;
 }
 
+int _close_path(lua_State* l) {
+  Cairo::close_path();
+  return 0;
+}
+
 int _rectangle(lua_State* l) {
   lua_check_num_args(l, 4);
   double x = luaL_checknumber(l, 1);
@@ -113,6 +118,12 @@ int _paint(lua_State* l) {
 
 int _fill(lua_State* l) {
   Cairo::fill();
+  lua_settop(l, 0);
+  return 0;
+}
+
+int _fill_preserve(lua_State* l) {
+  Cairo::fill_preserve();
   lua_settop(l, 0);
   return 0;
 }

@@ -1,5 +1,9 @@
 #include "cairo-wrapper.h"
 #include <string>
+#include <chrono>
+#include <ctime>
+#include <string>
+#include <iostream>
 
 cairo_t* Cairo::cr = nullptr;
 cairo_surface_t* Cairo::surface = nullptr;
@@ -70,6 +74,21 @@ void Cairo::createSurfaceForData(int w, int h, unsigned char* pixels, int stride
   cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
 }
 
+void Cairo::print() {
+  std::string path = getenv("HOME");
+
+  auto now = std::chrono::system_clock::now();
+  auto time = std::chrono::system_clock::to_time_t(now);
+  auto tstamp = std::ctime(&time);
+  
+  path += "/indiscipline_" + std::string(tstamp) + ".png";
+
+  auto s = cairo_surface_write_to_png(surface, path.c_str()); 
+  if (s != CAIRO_STATUS_SUCCESS) {
+    std::cerr << "Error while saving to file: " << cairo_status_to_string(s) << '\n';
+  }
+}
+
 void Cairo::finalize() {
   if (cr)
     cairo_destroy(cr);
@@ -98,6 +117,9 @@ void Cairo::set_source_rgba(double r, double g, double b, double a) {
 void Cairo::new_path() {
   cairo_new_path(cr);
 }
+void Cairo::close_path() {
+  cairo_close_path(cr);
+}
 void Cairo::rectangle(double x, double y, double w, double h) {
   cairo_rectangle(cr, x, y, w, h);
 }
@@ -124,6 +146,9 @@ void Cairo::paint() {
 }
 void Cairo::fill() {
   cairo_fill(cr);
+}
+void Cairo::fill_preserve() {
+  cairo_fill_preserve(cr);
 }
 void Cairo::stroke() {
   cairo_stroke(cr);

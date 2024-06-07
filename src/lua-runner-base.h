@@ -25,4 +25,5 @@ public:
   virtual void triggerPanelCallback(std::string device, int pin, int value) = 0;
 
   virtual void resetLuaState() = 0;
+  virtual void schedulePrint() = 0;
 };
