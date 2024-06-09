@@ -1,3 +1,4 @@
+#include "lua-runner-base.h"
 #include "main.h"
 #include "window.h"
 #include "cairo-wrapper.h"
@@ -108,6 +109,15 @@ void Window::handleEvents() {
         break;
       case SDL_KEYDOWN:
         handleKeyboardEvent();
+      case SDL_MOUSEMOTION:
+        LuaRunnerBase::setMousePosition(event_handler.motion.x, event_handler.motion.y);
+        break;
+      case SDL_MOUSEBUTTONDOWN:
+        LuaRunnerBase::setMouseButton(1);
+        break;
+      case SDL_MOUSEBUTTONUP:
+        LuaRunnerBase::setMouseButton(0);
+        break;
     }
   }
 }

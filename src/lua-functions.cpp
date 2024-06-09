@@ -1,9 +1,13 @@
 #include "lua-runner.h"
 #include "cairo-wrapper.h"
+#include <cstring>
 #include <iostream>
 #include <bitset>
 #include <lauxlib.h>
 #include <lua.h>
+
+LuaRunnerBase::MouseData LuaRunnerBase::mouse = {0, 0, 0};
+std::mutex LuaRunnerBase::mouseMux;
 
 int lua_check_num_args(lua_State* l, int n) {
   if (lua_gettop(l) != n) {
@@ -151,6 +155,10 @@ int _text(lua_State* l) {
   double width = luaL_optnumber(l, 4, 0);
   const char* alignment = luaL_optstring(l, 5, "");
   bool centered = luaL_optnumber(l, 6, 0);
+
+  if (!txt) {
+    return luaL_error(l, "Invalid text argument");
+  }
 
   lua_getglobal(l, "FontSize");
   if (lua_isnumber(l, -1) && size == 0) {
@@ -312,4 +320,12 @@ int LuaRunner::setOSCTarget(lua_State* l) {
 
   luaRunner->setIPTarget(ip_addr);
   return 0;
+}
+
+int LuaRunner::getMouseData(lua_State* l) {
+  LuaRunner::MouseData data = LuaRunner::getMouse();
+  lua_pushnumber(l, data.x);
+  lua_pushnumber(l, data.y);
+  lua_pushnumber(l, data.button);
+  return 3;
 }

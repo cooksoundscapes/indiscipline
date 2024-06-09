@@ -60,6 +60,7 @@ void LuaRunner::init() {
   loadFunction("jack_stop", &LuaRunner::stopJack);
   loadFunction("set_lights", &LuaRunner::setPanelLights);
   loadFunction("set_osc_target", &LuaRunner::setOSCTarget);
+  loadFunction("mouse", &LuaRunner::getMouseData);
 
   // include project path to LUA_PATH
   std::string setPkgCommand = "package.path = \"" + projectPath + "?.lua;\" .. package.path";

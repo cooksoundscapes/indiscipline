@@ -2,11 +2,18 @@
 #include <string>
 #include <lua.h>
 #include <vector>
+#include <mutex>
 
 class LuaRunnerBase
 {
 protected:
   std::string ipTarget;
+
+  struct MouseData {
+    int x, y, button;
+  };
+  static MouseData mouse;
+  static std::mutex mouseMux;
 
 public:
   virtual void loadFile(std::string file) = 0;
@@ -26,4 +33,18 @@ public:
 
   virtual void resetLuaState() = 0;
   virtual void schedulePrint() = 0;
+
+  static void setMousePosition(int x, int y) {
+    std::lock_guard<std::mutex> guard(mouseMux);
+    mouse.x = x;
+    mouse.y = y;
+  }
+  static void setMouseButton(int b) {
+    std::lock_guard<std::mutex> guard(mouseMux);
+    mouse.button = b;
+  }
+  static MouseData getMouse() {
+    std::lock_guard<std::mutex> guard(mouseMux);
+    return mouse;
+  }
 };

@@ -65,8 +65,8 @@ public:
     panel->registerCallback(DIRECT_CONTROL, directControl);
   }
 
-  void loadFile(std::string file);
-  void setGlobal(std::string name, double value);
+  void loadFile(std::string file) override;
+  void setGlobal(std::string name, double value) override;
   void setGlobal(std::string name, std::string value);
 
   void draw() override;
@@ -114,4 +114,5 @@ public:
   static int stopJack(lua_State*);
   static int setPanelLights(lua_State*);
   static int setOSCTarget(lua_State*);
+  static int getMouseData(lua_State*);
 };
