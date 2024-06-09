@@ -2,7 +2,6 @@
 #include <string>
 #include <chrono>
 #include <ctime>
-#include <string>
 #include <iostream>
 
 cairo_t* Cairo::cr = nullptr;
@@ -75,7 +74,7 @@ void Cairo::createSurfaceForData(int w, int h, unsigned char* pixels, int stride
 }
 
 void Cairo::print() {
-  std::string path = getenv("HOME");
+  std::string path{getenv("HOME")};
 
   auto now = std::chrono::system_clock::now();
   auto time = std::chrono::system_clock::to_time_t(now);
