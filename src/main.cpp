@@ -40,7 +40,7 @@ void signalHandler(int signal) {
   }
 }
 
-void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget, int& audio_channels)
+void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget, int& audio_channels, bool& allow_resize)
 {
   std::string home = getenv("HOME");
   if (home.empty()) {
@@ -85,6 +85,8 @@ void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget, int& aud
         ipTarget = value;
       } else if (key == "audio-channels") {
         audio_channels = std::stoi(value);
+      } else if (key == "sdl-allow-resize") {
+        allow_resize = value == "yes";
       }
     }
   }
@@ -94,7 +96,8 @@ int main()
 {
   int width, height, audio_channels;
   std::string luaPath, ipTarget;
-  setup(width, height, luaPath, ipTarget, audio_channels);
+  bool allow_resize;
+  setup(width, height, luaPath, ipTarget, audio_channels, allow_resize);
 
   std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
 
@@ -119,6 +122,9 @@ int main()
 
   if (width > 0 && height > 0) {
     graphics.setSize(width, height);
+  }
+  if (allow_resize) {
+    graphics.allowResize();
   }
 
   // setup lua interpreter at graphics driver and OSC  

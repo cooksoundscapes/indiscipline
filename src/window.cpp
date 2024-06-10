@@ -108,6 +108,12 @@ void Window::handleEvents() {
         break;
       case SDL_KEYDOWN:
         handleKeyboardEvent();
+        break;
+      /*case SDL_WINDOWEVENT:
+        if (event_handler.window.event == SDL_WINDOWEVENT_RESIZED) {
+          
+        }
+        break;*/
     }
   }
 }

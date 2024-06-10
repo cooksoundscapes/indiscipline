@@ -169,15 +169,22 @@ int _text(lua_State* l) {
       font = "Sans";
   }
 
-  if (strlen(alignment) != 0) {
-    params.alignment = alignment;
-  }
   params.text = txt;
   params.size = size;
   params.font = font;
   params.width = width;
   params.centered = centered;
   params.enableAntiAlias = enableAntiAlias;
+  params.alignment = alignment;
+
+  /*std::cout << "Built TextParams struct with data: "  <<
+  params.text << "; " <<
+  params.size << "; " <<
+  params.font << "; " <<
+  params.width << "; " <<
+  params.centered << "; " <<
+  params.enableAntiAlias << "; " <<
+  params.alignment << '\n';*/
 
   Cairo::text(params);
   lua_settop(l, 0);
