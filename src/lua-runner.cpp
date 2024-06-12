@@ -101,7 +101,7 @@ void LuaRunner::defineCallbacks() {
   sendOsc = [this](std::string device, int pin, int value)
   {
     // bypass osc if home button is pressed
-    if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == 1) {
+    if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == PRESS_VALUE) {
       loadFile(HOME_PAGE);
       return;
     }
