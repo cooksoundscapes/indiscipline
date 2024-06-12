@@ -38,10 +38,7 @@ class LuaRunner : public LuaRunnerBase {
   std::shared_ptr<AudioSinkBase> audioSink;
   std::shared_ptr<PanelBase> panel;
 
-  std::string currentPage = HOME_PAGE;
-  std::string projectPath;
-
-  void init();
+  std::string projectPath, defaultPage, currentPage;
  
   void setCurrentPage(std::string p);
 
@@ -55,8 +52,10 @@ class LuaRunner : public LuaRunnerBase {
   bool shouldPrint = false;
 
 public:
-  LuaRunner(int w, int h, std::string path, std::string ipTarget);
+  LuaRunner(int w, int h, std::string path, std::string ipTarget, std::string defaultPage);
   ~LuaRunner();
+
+  void init();
 
   void setAudioSink(std::shared_ptr<AudioSinkBase> audsnk) { this->audioSink = audsnk; }
   void setPanel(std::shared_ptr<PanelBase> panel) { 
