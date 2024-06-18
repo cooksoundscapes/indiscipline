@@ -1,7 +1,7 @@
 ## Indiscipline
 
 C++ Engine + Cairo graphics + Lua scripting + OSC server/client + SPI/I2C/GPIO handling (for raspberry pi);
-* Draws both on SDL2 window or framebuffer
+* Can be compiled to draw on SDL2 window, linux framebuffer or SPI (depends on custom display adaptation) - Already works for SSD1306
 
 
 ### Adding new lua-registered cairo calls
