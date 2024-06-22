@@ -110,13 +110,16 @@ void Window::handleEvents() {
       case SDL_KEYDOWN:
         handleKeyboardEvent();
       case SDL_MOUSEMOTION:
-        LuaRunnerBase::setMousePosition(event_handler.motion.x, event_handler.motion.y);
+        //LuaRunnerBase::setMousePosition(event_handler.motion.x, event_handler.motion.y);
+        luaInterpreter->setMousePos(event_handler.motion.x, event_handler.motion.y);
         break;
       case SDL_MOUSEBUTTONDOWN:
-        LuaRunnerBase::setMouseButton(1);
+        //LuaRunnerBase::setMouseButton(1);
+        luaInterpreter->setMouseButton(1);
         break;
       case SDL_MOUSEBUTTONUP:
-        LuaRunnerBase::setMouseButton(0);
+        //LuaRunnerBase::setMouseButton(0);
+        luaInterpreter->setMouseButton(0);
         break;
       /*case SDL_WINDOWEVENT:
         if (event_handler.window.event == SDL_WINDOWEVENT_RESIZED) {
@@ -144,8 +147,9 @@ void Window::draw() {
 
   Cairo::createSurfaceForData(width, height, pixels, stride);
 
-  if (luaInterpreter != nullptr)
+  if (luaInterpreter != nullptr) {
     luaInterpreter->draw();
+  }
 
   //end drawing
   SDL_UnlockTexture(screen);

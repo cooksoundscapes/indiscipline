@@ -34,7 +34,10 @@ public:
   virtual void resetLuaState() = 0;
   virtual void schedulePrint() = 0;
 
-  static void setMousePosition(int x, int y) {
+  virtual void setMousePos(int x, int y) = 0;
+  virtual void setMouseButton(int s) = 0;
+
+  /*static void setMousePosition(int x, int y) {
     std::lock_guard<std::mutex> guard(mouseMux);
     mouse.x = x;
     mouse.y = y;
@@ -42,7 +45,7 @@ public:
   static void setMouseButton(int b) {
     std::lock_guard<std::mutex> guard(mouseMux);
     mouse.button = b;
-  }
+  }*/
   static MouseData getMouse() {
     std::lock_guard<std::mutex> guard(mouseMux);
     return mouse;

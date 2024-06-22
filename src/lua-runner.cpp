@@ -166,6 +166,11 @@ void LuaRunner::draw() {
   std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_getglobal(state, DRAW);
+  #ifndef USE_FB
+  #ifndef USE_SSD1306
+    updateMouse();
+  #endif
+  #endif
 
   if (lua_pcall(state, 0, 0, 0) != 0) {
     std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
