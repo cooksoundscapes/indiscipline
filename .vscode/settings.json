@@ -83,7 +83,8 @@
     "hash_set": "cpp",
     "shared_mutex": "cpp",
     "complex": "cpp",
-    "coroutine": "cpp"
+    "coroutine": "cpp",
+    "text_encoding": "cpp"
   },
   "Lua.diagnostics.globals": [
     "set_source_rgb",

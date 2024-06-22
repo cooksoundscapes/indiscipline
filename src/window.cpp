@@ -118,6 +118,11 @@ void Window::handleEvents() {
       case SDL_MOUSEBUTTONUP:
         LuaRunnerBase::setMouseButton(0);
         break;
+      /*case SDL_WINDOWEVENT:
+        if (event_handler.window.event == SDL_WINDOWEVENT_RESIZED) {
+          
+        }
+        break;*/
     }
   }
 }

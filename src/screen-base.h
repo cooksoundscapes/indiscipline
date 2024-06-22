@@ -27,10 +27,6 @@ public:
     this->luaInterpreter = LIntr;
   }
 
-  void loadLuaScript(std::string file) {
-    luaInterpreter->loadFile(file);
-  }
-
   virtual void loop() = 0;
 
   void stop() {
@@ -38,4 +34,5 @@ public:
     shouldQuit = true;
   }
 
+  virtual void allowResize() {};
 };

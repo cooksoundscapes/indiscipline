@@ -4,13 +4,13 @@
 #include <cstdlib>
 #include "cairo-wrapper.h"
 
-LuaRunner::LuaRunner(int w, int h, std::string path, std::string ip) {
-  projectPath = path;
+LuaRunner::LuaRunner(int w, int h, std::string path, std::string ip, std::string page) {
   screen_w = w;
   screen_h = h;
+  projectPath = path;
   ipTarget = ip;
-  // initialize lua state and register all globals and functions
-  init();
+  defaultPage = page;
+  currentPage = page;
 
   // define control callbacks
   defineCallbacks();
@@ -73,6 +73,8 @@ void LuaRunner::init() {
   } else {
     std::cerr << "Failed to load script " << luaSetupPath << ": " << lua_tostring(state, -1) << std::endl;
   }
+
+  loadFile(defaultPage);
 }
 
 LuaRunner::~LuaRunner() {
@@ -85,7 +87,6 @@ void LuaRunner::resetLuaState() {
 
   lua_close(state); // close state
   init(); // call the constructor again
-  loadFile(HOME_PAGE); // load home
 }
 
 void LuaRunner::defineCallbacks() {
@@ -101,7 +102,7 @@ void LuaRunner::defineCallbacks() {
   sendOsc = [this](std::string device, int pin, int value)
   {
     // bypass osc if home button is pressed
-    if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == 1) {
+    if (device == NAV_BUTTONS && pin == HOME_BUTTON && value == PRESS_VALUE) {
       loadFile(HOME_PAGE);
       return;
     }

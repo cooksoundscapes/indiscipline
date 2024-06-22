@@ -94,8 +94,8 @@ void AudioSink::start() {
     }
 
     //FOR TESTING PURPOSES ONLY! (maybe)
-    jack_connect(client, "system:capture_1", "craddle:input_1");
-    jack_connect(client, "system:capture_2", "craddle:input_2");
+    //jack_connect(client, "system:capture_1", "craddle:input_1");
+    //jack_connect(client, "system:capture_2", "craddle:input_2");
 }
 
 AudioSink::~AudioSink() {

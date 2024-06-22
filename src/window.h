@@ -19,6 +19,8 @@ class Window : public ScreenBase {
   void handleKeyboardEvent();
   void draw();
 
+  bool resize = false;  
+
 public: 
   Window(int w, int h);
   ~Window();
@@ -26,4 +28,8 @@ public:
   void setSize(int w, int h);
 
   void loop();
+
+  void allowResize() override {
+    resize = true;
+  }
 };

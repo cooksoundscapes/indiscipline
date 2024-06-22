@@ -40,8 +40,15 @@ void signalHandler(int signal) {
   }
 }
 
-void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget, int& audio_channels)
-{
+void setup(
+  int& w,
+  int& h,
+  std::string& luaPath,
+  std::string& ipTarget,
+  int& audio_channels,
+  bool& allow_resize,
+  std::string& default_view
+) {
   std::string home = getenv("HOME");
   if (home.empty()) {
   	std::cerr << "Invalid $HOME env variable, exiting.\n";
@@ -56,6 +63,7 @@ void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget, int& aud
   #endif
   luaPath = home + "/views/";
   audio_channels = A_CHANNELS;
+  default_view = HOME_PAGE;
 
   std::string configPath = home + "/.bouncersettings";
   std::ifstream handler(configPath);
@@ -85,6 +93,10 @@ void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget, int& aud
         ipTarget = value;
       } else if (key == "audio-channels") {
         audio_channels = std::stoi(value);
+      } else if (key == "sdl-allow-resize") {
+        allow_resize = value == "yes";
+      } else if (key == "default-view") {
+        default_view = value;
       }
     }
   }
@@ -92,15 +104,16 @@ void setup(int& w, int& h, std::string& luaPath, std::string& ipTarget, int& aud
 
 int main()
 {
-  int width, height, audio_channels;
-  std::string luaPath, ipTarget;
-  setup(width, height, luaPath, ipTarget, audio_channels);
+  int width, height, audioChannels;
+  std::string luaPath, ipTarget, defaultView;
+  bool allowResize;
+  setup(width, height, luaPath, ipTarget, audioChannels, allowResize, defaultView);
 
   std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
 
   OscServer oscServer;
-  auto luaInterpreter = std::make_shared<LuaRunner>(width, height, luaPath, ipTarget);
-  auto audioSink = std::make_shared<AudioSink>(audio_channels);
+  auto luaInterpreter = std::make_shared<LuaRunner>(width, height, luaPath, ipTarget, defaultView);
+  auto audioSink = std::make_shared<AudioSink>(audioChannels);
 
   luaInterpreter->setAudioSink(audioSink);
 
@@ -120,12 +133,13 @@ int main()
   if (width > 0 && height > 0) {
     graphics.setSize(width, height);
   }
+  if (allowResize) {
+    graphics.allowResize();
+  }
 
   // setup lua interpreter at graphics driver and OSC  
   graphics.setLuaInterpreter(luaInterpreter);
   oscServer.setLuaInterpreter(luaInterpreter);
-
-  graphics.loadLuaScript(HOME_PAGE);
 
   signal(SIGINT, signalHandler);
 
@@ -140,6 +154,8 @@ int main()
       std::cout << "Using SDL2 as graphics output;\n";
     #endif
   #endif
+
+  luaInterpreter->init();
 
   graphics.loop();
   

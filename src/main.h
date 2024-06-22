@@ -33,6 +33,7 @@ constexpr int RESETPIN = 22;
 constexpr int DCPIN = 23;
 constexpr int ENCODER_INT = 17;
 constexpr int BUTTON_INT = 27;
+constexpr int PRESS_VALUE = -1;
 constexpr const char* ENCODERS = "encoders";
 constexpr const char* NAV_BUTTONS = "nav_buttons";
 constexpr const char* SEQ_BUTTONS = "seq_buttons";
