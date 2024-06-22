@@ -21,7 +21,9 @@ Window::Window(int w, int h) : ScreenBase(w, h)
     std::cerr << SDL_GetError() << '\n';
       
   renderer = SDL_CreateRenderer(window, -1, 
-    SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED); 
+    SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED
+    //SDL_RENDERER_ACCELERATED
+  ); 
   if (renderer == NULL)
     std::cerr << SDL_GetError() << '\n';  
   IMG_Init(IMG_INIT_PNG);
@@ -63,20 +65,22 @@ void Window::loop()
     width,
     height
   );
-  auto start = SDL_GetTicks();
-  auto end = SDL_GetTicks();
-  float delta = 0;
-    
+  
+  Uint32 FRAME_DURATION = 1000 / 30;
+  Uint32 b = SDL_GetTicks();
+  
   while (!shouldQuit) {
-    start = SDL_GetTicks();
-		delta = start - end;
-    if (delta > 1000/30.0) {
-			handleEvents();
-			updateWindow();
-			end = start;
-			fps = 1000 / delta;
-			luaInterpreter->setGlobal("fps", fps);
-		}
+    handleEvents();
+    
+    Uint32 a = SDL_GetTicks();
+		Uint32 delta = a - b;
+
+    if (delta > FRAME_DURATION) {
+      updateWindow();
+      b = a;
+		} else {
+      SDL_Delay(FRAME_DURATION - delta);
+    }
   }
   SDL_DestroyTexture(screen);
   screen = NULL;
@@ -110,22 +114,14 @@ void Window::handleEvents() {
       case SDL_KEYDOWN:
         handleKeyboardEvent();
       case SDL_MOUSEMOTION:
-        //LuaRunnerBase::setMousePosition(event_handler.motion.x, event_handler.motion.y);
         luaInterpreter->setMousePos(event_handler.motion.x, event_handler.motion.y);
         break;
       case SDL_MOUSEBUTTONDOWN:
-        //LuaRunnerBase::setMouseButton(1);
         luaInterpreter->setMouseButton(1);
         break;
       case SDL_MOUSEBUTTONUP:
-        //LuaRunnerBase::setMouseButton(0);
         luaInterpreter->setMouseButton(0);
         break;
-      /*case SDL_WINDOWEVENT:
-        if (event_handler.window.event == SDL_WINDOWEVENT_RESIZED) {
-          
-        }
-        break;*/
     }
   }
 }

@@ -7,8 +7,6 @@
 #include <sys/ioctl.h>
 
 class FramebufferDisplay : public ScreenBase {
-  int targetFps = 60;
-
   std::vector<uint8_t> pixel_data;
 
   int fb_fd; // framebuffer file descriptor

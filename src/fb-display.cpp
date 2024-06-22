@@ -6,23 +6,22 @@
 using namespace std::chrono;
 
 void FramebufferDisplay::loop() {
-  // setup FPS
-  milliseconds frameDuration(1000 / targetFps);
-
   // prepare pixel data allocation
   int stride = Cairo::getStrideForWidth(width);
   pixel_data.resize(stride * height);
-    
-  while (!shouldQuit) {
-    auto start = high_resolution_clock::now();
-		
-    draw(stride);
 
-    auto end = high_resolution_clock::now();
-    auto elapsed = duration_cast<milliseconds>(end - start);
-    
-    if (elapsed < frameDuration) {
-      std::this_thread::sleep_for(frameDuration - elapsed);
+  // setup FPS
+  milliseconds FRAME_DURATION(1000 / 30);
+  auto b = high_resolution_clock::now(); 
+  
+  while (!shouldQuit) {	
+    auto a = high_resolution_clock::now();
+    auto delta = duration_cast<milliseconds>(a - b);
+
+    if (delta > FRAME_DURATION) {
+      draw(stride);
+    } else {
+      std::this_thread::sleep_for(FRAME_DURATION - delta);
     }
   }
 }

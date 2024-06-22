@@ -63,7 +63,11 @@ void LuaRunner::init() {
   loadFunction("mouse", &LuaRunner::getMouseData);
 
   // include project path to LUA_PATH
-  std::string setPkgCommand = "package.path = \"" + projectPath + "?.lua;\" .. package.path";
+  std::string setPkgCommand = "package.path = \"" + projectPath + "?.lua;" + "\" .. package.path";
+  luaL_dostring(state, setPkgCommand.c_str());
+
+  // include project path to LUA_C_PATH
+  setPkgCommand = "package.cpath = \"" + projectPath + "?.so;" + "\" .. package.cpath";
   luaL_dostring(state, setPkgCommand.c_str());
 
   // load $lua_path/setup.lua
@@ -165,16 +169,24 @@ void LuaRunner::setGlobal(std::string varname, std::string value) {
 void LuaRunner::draw() {
   std::lock_guard<std::recursive_mutex> lock(mutex);
 
-  lua_getglobal(state, DRAW);
   #ifndef USE_FB
   #ifndef USE_SSD1306
-    updateMouse();
+    lua_pushnumber(state, mouseX);
+    lua_setglobal(state, "mouse_x");
+    lua_pushnumber(state, mouseY);
+    lua_setglobal(state, "mouse_y");
+    lua_pushnumber(state, mouseButton);
+    lua_setglobal(state, "mouse_button");
   #endif
   #endif
 
-  if (lua_pcall(state, 0, 0, 0) != 0) {
-    std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
+  lua_getglobal(state, DRAW);
+  if (lua_isfunction(state, -1)) {
+    if (lua_pcall(state, 0, 0, 0) != 0) {
+      std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
+    }
   }
+
   if (shouldPrint) {
     Cairo::print();
     shouldPrint = false;

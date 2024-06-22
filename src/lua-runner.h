@@ -44,19 +44,7 @@ class LuaRunner : public LuaRunnerBase {
   void setCurrentPage(std::string p);
 
   std::recursive_mutex mutex;
-  /*std::atomic<int> mouseX{0};
-  std::atomic<int> mouseY{0};
-  std::atomic<int> mouseButton{0};*/
   int mouseX{0}, mouseY{0}, mouseButton{0};
-
-  void updateMouse() {
-    /*setGlobal("mouse_x", mouseX.load(std::memory_order_relaxed));
-    setGlobal("mouse_y", mouseY.load(std::memory_order_relaxed));
-    setGlobal("mouse_button", mouseButton.load(std::memory_order_relaxed));*/
-    setGlobal("mouse_x", mouseX);
-    setGlobal("mouse_y", mouseY);
-    setGlobal("mouse_button", mouseButton);
-  }
 
   lo_address client_osc_addr;
 
@@ -116,14 +104,11 @@ public:
   std::string getPath() {return projectPath;}
 
   void setMousePos(int x, int y) override {
-    /*mouseX.store(x, std::memory_order_relaxed);
-    mouseY.store(y, std::memory_order_relaxed);*/
     mouseX = x;
     mouseY = y;
   }
 
   void setMouseButton(int s) override {
-    //mouseButton.store(s, std::memory_order_relaxed);
     mouseButton = s;
   }
 
