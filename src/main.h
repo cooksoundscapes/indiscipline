@@ -13,6 +13,7 @@ constexpr int WINDOW_WIDTH = 320;
 constexpr int WINDOW_HEIGHT = 240;
 constexpr int OLED_DISPLAY_WIDTH = 128;
 constexpr int OLED_DISPLAY_HEIGHT = 64;
+constexpr int TARGET_FPS = 30;
 
 constexpr const char* DEFAULT_FONT = "Sans";
 
@@ -24,6 +25,7 @@ constexpr const char* PANEL_INPUT = "PanelInput";
 constexpr const char* DRAW = "Draw";
 constexpr const char* CLEANUP = "Cleanup";
 constexpr const char* SET_TABLE = "SetTable";
+constexpr const char* FILE_DROP = "FileDrop";
 constexpr int HOME_BUTTON = 1;
 
 //----------------------HW-------------------//

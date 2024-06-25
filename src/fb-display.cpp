@@ -1,27 +1,22 @@
 #include "fb-display.h"
 #include "cairo-wrapper.h"
-#include <chrono>
 #include <thread>
-
-using namespace std::chrono;
 
 void FramebufferDisplay::loop() {
   // prepare pixel data allocation
   int stride = Cairo::getStrideForWidth(width);
   pixel_data.resize(stride * height);
 
-  // setup FPS
-  milliseconds FRAME_DURATION(1000 / 30);
   auto b = high_resolution_clock::now(); 
   
   while (!shouldQuit) {	
     auto a = high_resolution_clock::now();
     auto delta = duration_cast<milliseconds>(a - b);
 
-    if (delta > FRAME_DURATION) {
+    if (delta > frameDuration) {
       draw(stride);
     } else {
-      std::this_thread::sleep_for(FRAME_DURATION - delta);
+      std::this_thread::sleep_for(frameDuration - delta);
     }
   }
 }
@@ -33,8 +28,9 @@ void FramebufferDisplay::draw(int stride) {
     pixel_data.data(),
     stride
   );
-  if (luaInterpreter != nullptr)
+  if (luaInterpreter != nullptr) {
     luaInterpreter->draw();
+  }
   Cairo::flush();
   Cairo::finalize();
 

@@ -6,9 +6,6 @@
 #include <lauxlib.h>
 #include <lua.h>
 
-LuaRunnerBase::MouseData LuaRunnerBase::mouse = {0, 0, 0};
-std::mutex LuaRunnerBase::mouseMux;
-
 int lua_check_num_args(lua_State* l, int n) {
   if (lua_gettop(l) != n) {
     return luaL_error(l, "error: wrong number of arguments;");
@@ -329,10 +326,3 @@ int LuaRunner::setOSCTarget(lua_State* l) {
   return 0;
 }
 
-int LuaRunner::getMouseData(lua_State* l) {
-  LuaRunner::MouseData data = LuaRunner::getMouse();
-  lua_pushnumber(l, data.x);
-  lua_pushnumber(l, data.y);
-  lua_pushnumber(l, data.button);
-  return 3;
-}

@@ -7,34 +7,38 @@
 
 Window::Window(int w, int h) : ScreenBase(w, h)
 {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0)
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cerr << SDL_GetError() << '\n';
+    exit(1);
+  }
   window = SDL_CreateWindow(
-    "HW::CTRL", 
+    "Indiscipline", 
     SDL_WINDOWPOS_UNDEFINED,
     SDL_WINDOWPOS_UNDEFINED,
     w,
     h,
     SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE
   );
-  if (window == NULL)
+  if (window == NULL) {
     std::cerr << SDL_GetError() << '\n';
-      
+    exit(1);
+  }
   renderer = SDL_CreateRenderer(window, -1, 
     SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED
-    //SDL_RENDERER_ACCELERATED
   ); 
-  if (renderer == NULL)
+  if (renderer == NULL) {
     std::cerr << SDL_GetError() << '\n';  
+    exit(1);
+  }
   IMG_Init(IMG_INIT_PNG);
   TTF_Init();
+
+  SDL_version v;
+  SDL_GetVersion(&v);
+  printf("Linked with SDL version: %d.%d.%d\n", v.major, v.minor, v.patch);
   //-------end SDL setup -----------
   font = TTF_OpenFont("/usr/share/fonts/TTF/DejaVuSans.ttf", 16);
-
-  SDL_version linked;
-  SDL_GetVersion(&linked);
-  printf("Linked with SDL version: %d.%d.%d\n", linked.major, linked.minor, linked.patch);
-
+  frameDuration = 1000 / TARGET_FPS;
 }
 
 Window::~Window() 
@@ -54,6 +58,16 @@ Window::~Window()
 void Window::setSize(int w, int h) {
   ScreenBase::setSize(w, h);
   SDL_SetWindowSize(window, w, h);
+  if (screen != nullptr) {
+    SDL_DestroyTexture(screen);
+    screen = SDL_CreateTexture(
+      renderer,
+      SDL_PIXELFORMAT_ARGB8888,
+      SDL_TEXTUREACCESS_STREAMING,
+      width,
+      height
+    );
+  }
 }
 
 void Window::loop()
@@ -65,30 +79,29 @@ void Window::loop()
     width,
     height
   );
-  
-  Uint32 FRAME_DURATION = 1000 / 30;
-  Uint32 b = SDL_GetTicks();
-  
+  Uint32 a = SDL_GetTicks();
+  // main
   while (!shouldQuit) {
     handleEvents();
     
-    Uint32 a = SDL_GetTicks();
-		Uint32 delta = a - b;
+    Uint32 b = SDL_GetTicks();
+		Uint32 delta = b - a;
 
-    if (delta > FRAME_DURATION) {
+    if (delta > frameDuration) {
       updateWindow();
-      b = a;
+      a = b;
 		} else {
-      SDL_Delay(FRAME_DURATION - delta);
+      SDL_Delay(frameDuration - delta);
     }
   }
+
   SDL_DestroyTexture(screen);
   screen = NULL;
 }
 
-void Window::handleKeyboardEvent() {
-  if (event_handler.key.repeat > 0) return;
-  auto key = event_handler.key.keysym.sym;
+void Window::handleKeyboardEvent(SDL_Event& evt) {
+  if (evt.key.repeat > 0) return;
+  auto key = evt.key.keysym.sym;
   switch(key) {
     case SDLK_UP:
       luaInterpreter->triggerPanelCallback(ENCODERS, 1, -1);
@@ -106,21 +119,33 @@ void Window::handleKeyboardEvent() {
 }
 
 void Window::handleEvents() {
-  if (SDL_PollEvent(&event_handler) != 0) {
-    switch (event_handler.type) {
+  SDL_Event event;
+  if (SDL_PollEvent(&event) != 0) {
+    LuaRunnerBase::ParamList p;
+    switch (event.type) {
       case SDL_QUIT:
         shouldQuit = true;
         break;
       case SDL_KEYDOWN:
-        handleKeyboardEvent();
+        handleKeyboardEvent(event);
       case SDL_MOUSEMOTION:
-        luaInterpreter->setMousePos(event_handler.motion.x, event_handler.motion.y);
+        luaInterpreter->setMousePos(event.motion.x, event.motion.y);
         break;
       case SDL_MOUSEBUTTONDOWN:
         luaInterpreter->setMouseButton(1);
         break;
       case SDL_MOUSEBUTTONUP:
         luaInterpreter->setMouseButton(0);
+        break;
+      case SDL_DROPFILE:
+        p.push_back({'s', 0, event.drop.file});
+        luaInterpreter->callFunction(FILE_DROP, p);
+        break;
+      case SDL_WINDOWEVENT:
+        if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+          setSize(event.window.data1, event.window.data2);
+          luaInterpreter->setScreenSize(event.window.data1, event.window.data2);
+        }
         break;
     }
   }

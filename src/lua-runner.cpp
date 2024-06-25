@@ -60,7 +60,6 @@ void LuaRunner::init() {
   loadFunction("jack_stop", &LuaRunner::stopJack);
   loadFunction("set_lights", &LuaRunner::setPanelLights);
   loadFunction("set_osc_target", &LuaRunner::setOSCTarget);
-  loadFunction("mouse", &LuaRunner::getMouseData);
 
   // include project path to LUA_PATH
   std::string setPkgCommand = "package.path = \"" + projectPath + "?.lua;" + "\" .. package.path";
@@ -180,6 +179,14 @@ void LuaRunner::draw() {
   #endif
   #endif
 
+  if (resizing) {
+    resizing = false;
+    lua_pushnumber(state, screen_w);
+    lua_setglobal(state, SCREEN_W);
+    lua_pushnumber(state, screen_h);
+    lua_setglobal(state, SCREEN_H);
+  }
+
   lua_getglobal(state, DRAW);
   if (lua_isfunction(state, -1)) {
     if (lua_pcall(state, 0, 0, 0) != 0) {
@@ -243,6 +250,8 @@ void LuaRunner::setTable(std::string name, std::vector<float>& buff)
     lua_pop(state, 1);
     return;
   }
+  lua_pushstring(state, name.c_str());
+
   lua_newtable(state);
   size_t i{0};
   for (auto f : buff) {
@@ -251,7 +260,6 @@ void LuaRunner::setTable(std::string name, std::vector<float>& buff)
     lua_settable(state, -3);
     i++;
   }
-  lua_pushstring(state, name.c_str());
 
   if (lua_pcall(state, 2, 0, 0) != 0) {
     const char* errorMsg = lua_tostring(state, -1);

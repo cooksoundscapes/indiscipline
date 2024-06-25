@@ -44,7 +44,8 @@ class LuaRunner : public LuaRunnerBase {
   void setCurrentPage(std::string p);
 
   std::recursive_mutex mutex;
-  int mouseX{0}, mouseY{0}, mouseButton{0};
+  float mouseX{0}, mouseY{0};
+  int mouseButton{0};
 
   lo_address client_osc_addr;
 
@@ -52,6 +53,7 @@ class LuaRunner : public LuaRunnerBase {
 
   int screen_w, screen_h;
   bool shouldPrint = false;
+  bool resizing = false;
 
 public:
   LuaRunner(int w, int h, std::string path, std::string ipTarget, std::string defaultPage);
@@ -68,7 +70,7 @@ public:
 
   void loadFile(std::string file) override;
   void setGlobal(std::string name, double value) override;
-  void setGlobal(std::string name, std::string value);
+  void setGlobal(std::string name, std::string value) override;
 
   void draw() override;
   void loadFunction(std::string name, lua_CFunction fn);
@@ -93,17 +95,13 @@ public:
 	  projectPath = path;
   }
 
-  void setScreenSize(int w, int h) {
-    std::lock_guard<std::recursive_mutex> lock(mutex);
+  void setScreenSize(int w, int h) override {
     screen_w = w;
     screen_h = h;
-    setGlobal(SCREEN_W, w);
-    setGlobal(SCREEN_H, h);
+    resizing = true;
   }
-  
-  std::string getPath() {return projectPath;}
 
-  void setMousePos(int x, int y) override {
+  void setMousePos(float x, float y) override {
     mouseX = x;
     mouseY = y;
   }
@@ -111,6 +109,8 @@ public:
   void setMouseButton(int s) override {
     mouseButton = s;
   }
+
+  std::string getPath() {return projectPath;}
 
   // callback control functions
   std::function<void(std::string, int, int)> sendOsc;
@@ -124,5 +124,4 @@ public:
   static int stopJack(lua_State*);
   static int setPanelLights(lua_State*);
   static int setOSCTarget(lua_State*);
-  static int getMouseData(lua_State*);
 };

@@ -57,7 +57,7 @@ buffer_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_mes
 {
   auto luaRunner = (LuaRunnerBase*) userData;
   std::vector<float> buffer;
-  std::string target;
+  std::string t_name;
 
   for (int i = 0; types[i] != '\0'; i++) {
     if (i == 0 && types[i] != 's') {
@@ -67,12 +67,12 @@ buffer_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_mes
       std::cerr << "Error: " << p << " requires a float array\n";
       return 0;
     } else if (types[i] == 's') {
-      target = &argv[i]->s;
+      t_name = &argv[i]->s;
     } else if (types[i] == 'f') {
       buffer.push_back(argv[i]->f);
     }
   }
-  luaRunner->setTable(target, buffer);
+  luaRunner->setTable(t_name, buffer);
   return 0;
 }
 

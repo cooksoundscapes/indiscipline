@@ -28,11 +28,10 @@ public:
   }
 
   virtual void loop() = 0;
+  virtual void setFps(int) = 0;
 
   void stop() {
     std::cout << "bOOOOHBYE\n";
     shouldQuit = true;
   }
-
-  virtual void allowResize() {};
 };

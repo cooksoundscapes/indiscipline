@@ -46,7 +46,6 @@ void setup(
   std::string& luaPath,
   std::string& ipTarget,
   int& audio_channels,
-  bool& allow_resize,
   std::string& default_view
 ) {
   std::string home = getenv("HOME");
@@ -93,8 +92,6 @@ void setup(
         ipTarget = value;
       } else if (key == "audio-channels") {
         audio_channels = std::stoi(value);
-      } else if (key == "sdl-allow-resize") {
-        allow_resize = value == "yes";
       } else if (key == "default-view") {
         default_view = value;
       }
@@ -107,7 +104,7 @@ int main()
   int width, height, audioChannels;
   std::string luaPath, ipTarget, defaultView;
   bool allowResize;
-  setup(width, height, luaPath, ipTarget, audioChannels, allowResize, defaultView);
+  setup(width, height, luaPath, ipTarget, audioChannels, defaultView);
 
   std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
 
@@ -132,9 +129,6 @@ int main()
 
   if (width > 0 && height > 0) {
     graphics.setSize(width, height);
-  }
-  if (allowResize) {
-    graphics.allowResize();
   }
 
   // setup lua interpreter at graphics driver and OSC  

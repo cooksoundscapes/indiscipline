@@ -1,14 +1,8 @@
 #include "spi-display.h"
-#include <chrono>
 #include <thread>
 #include "cairo-wrapper.h"
 
-using namespace std::chrono;
-
 void SPIDisplay::loop() {
-  // setup FPS
-  milliseconds frameDuration(1000 / targetFps);
-
   // prepare pixel data allocation
   int stride = Cairo::getStrideForWidth(width);
   pixel_data.resize(stride * height);
@@ -26,24 +20,6 @@ void SPIDisplay::loop() {
     if (elapsed < frameDuration) {
       std::this_thread::sleep_for(frameDuration - elapsed);
     }
-  }
-}
-
-/**
- * @deprecated (almost)
-*/
-void SPIDisplay::measureFps() {
-  static int frameCount = 0;
-  static auto lastSecond = high_resolution_clock::now();
-
-  frameCount++;
-  auto now = high_resolution_clock::now();
-  auto elapsedSeconds = duration_cast<seconds>(now - lastSecond);
-  if (elapsedSeconds.count() >= 1) {
-    double actualFPS = frameCount / elapsedSeconds.count();
-    frameCount = 0;
-    lastSecond = now;
-    luaInterpreter->setGlobal("fps", actualFPS);
   }
 }
 

@@ -8,18 +8,15 @@
 class Window : public ScreenBase {
   SDL_Window* window = NULL;
   SDL_Renderer* renderer = NULL;
-
-  long fps = 0;
   TTF_Font* font = NULL;
-  SDL_Event event_handler;
   SDL_Texture* screen = NULL;
 
   void updateWindow();
   void handleEvents();
-  void handleKeyboardEvent();
+  void handleKeyboardEvent(SDL_Event&);
   void draw();
 
-  bool resize = false;  
+  Uint32 frameDuration;
 
 public: 
   Window(int w, int h);
@@ -27,9 +24,9 @@ public:
 
   void setSize(int w, int h);
 
-  void loop();
-
-  void allowResize() override {
-    resize = true;
+  void setFps(int fps) override {
+    frameDuration = 1000 / fps;
   }
+
+  void loop();
 };
