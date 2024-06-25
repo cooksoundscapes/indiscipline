@@ -43,6 +43,7 @@ void signalHandler(int signal) {
 void setup(
   int& w,
   int& h,
+  int& targetFps,
   std::string& luaPath,
   std::string& ipTarget,
   int& audio_channels,
@@ -60,6 +61,7 @@ void setup(
     w = WINDOW_WIDTH;
     h = WINDOW_HEIGHT;
   #endif
+  targetFps = TARGET_FPS;
   luaPath = home + "/views/";
   audio_channels = A_CHANNELS;
   default_view = HOME_PAGE;
@@ -81,6 +83,8 @@ void setup(
         w = std::stoi(value);
       } else if (key == "height") {
         h = std::stoi(value);
+      } else if (key == "fps") {
+        targetFps = std::stoi(value);
       } else if (key == "lua-path") {
         if (value[0] == '~') {
           value.erase(0,1);
@@ -101,12 +105,13 @@ void setup(
 
 int main()
 {
-  int width, height, audioChannels;
+  int width, height, audioChannels, targetFps;
   std::string luaPath, ipTarget, defaultView;
   bool allowResize;
-  setup(width, height, luaPath, ipTarget, audioChannels, defaultView);
+  setup(width, height, targetFps, luaPath, ipTarget, audioChannels, defaultView);
+  std::cout << "Rendering screen at " << width << 'x' << height << " at " << targetFps << "FPS;\nLua path is " << luaPath << ";\n";
 
-  std::cout << "Rendering screen at " << width << 'x' << height << ";\nLua path is " << luaPath << ";\n";
+  graphics.setFps(targetFps);
 
   OscServer oscServer;
   auto luaInterpreter = std::make_shared<LuaRunner>(width, height, luaPath, ipTarget, defaultView);
