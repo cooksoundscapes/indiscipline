@@ -171,6 +171,10 @@ void Window::draw() {
   if (luaInterpreter != nullptr) {
     luaInterpreter->draw();
   }
+  if (shouldPrint) {
+    Cairo::print();
+    shouldPrint = false;
+  }
 
   //end drawing
   SDL_UnlockTexture(screen);

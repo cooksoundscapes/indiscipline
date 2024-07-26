@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_events.h>
+#include <vector>
 #include "screen-base.h"
 #include <memory>
 
@@ -10,6 +11,8 @@ class Window : public ScreenBase {
   SDL_Renderer* renderer = NULL;
   TTF_Font* font = NULL;
   SDL_Texture* screen = NULL;
+  std::vector<SDL_Texture*> components;
+  std::vector<unsigned int> dirtyTexturesIds; 
 
   void updateWindow();
   void handleEvents();
@@ -17,6 +20,7 @@ class Window : public ScreenBase {
   void draw();
 
   Uint32 frameDuration;
+  bool shouldPrint = false;
 
 public: 
   Window(int w, int h);
@@ -29,6 +33,10 @@ public:
   }
 
   void loadFile(const char*) override;
+
+  void schedulePrint() override {
+    shouldPrint = true;
+  }
 
   void loop();
 };

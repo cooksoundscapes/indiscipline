@@ -29,7 +29,6 @@ public:
   virtual void triggerPanelCallback(std::string device, int pin, int value) = 0;
 
   virtual void resetLuaState() = 0;
-  virtual void schedulePrint() = 0;
   virtual void setScreenSize(int, int) = 0;
 
   virtual void setMousePos(float x, float y) = 0;

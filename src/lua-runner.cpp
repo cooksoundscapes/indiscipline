@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
-#include "cairo-wrapper.h"
 
 LuaRunner::LuaRunner(int w, int h, std::string path, std::string ip, std::string page) {
   screen_w = w;
@@ -23,7 +22,7 @@ void LuaRunner::init() {
 
   // expose lua interpreter class to the scripts
   lua_pushlightuserdata(state, this);
-  lua_setglobal(state, "app");
+  lua_setglobal(state, "LuaInterpreter");
   // register screen size globals for UI reference
   setGlobal(SCREEN_W, screen_w);
   setGlobal(SCREEN_H, screen_h);
@@ -192,11 +191,6 @@ void LuaRunner::draw() {
   }
 
   globalFunction(DRAW);
-
-  if (shouldPrint) {
-    Cairo::print();
-    shouldPrint = false;
-  }
 }
 
 void LuaRunner::loadFunction(std::string name, lua_CFunction fn)
@@ -274,4 +268,104 @@ void LuaRunner::triggerPanelCallback(std::string device, int pin, int value)
   } else {
     sendOsc(device, pin, value);
   }
+}
+
+/**
+ * Static Calls to be registered at State
+ */
+
+// retrieve audio buffer function from sink
+int LuaRunner::getAudioBuffer(lua_State* l) {
+  lua_getglobal(l, "app");
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+
+  lua_check_num_args(l, 1);
+  double channel = luaL_checknumber(l, 1);
+  auto buffer = luaRunner->audioSink->getBuffer(channel);
+  lua_newtable(l);
+
+  if (buffer.size() > 0) {
+    for (int i{0}; i < buffer.size(); i++) {
+      lua_pushnumber(l, buffer[i]);
+      lua_rawseti(l, -2, i + 1);
+    }
+  }
+  return 1;
+}
+
+int LuaRunner::getBufferSize(lua_State* l) {
+  lua_getglobal(l, "LuaInterpreter");
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+
+  int b_size = luaRunner->audioSink->getBufferSize();
+  lua_pushnumber(l, b_size);
+  return 1;
+}
+
+int LuaRunner::startJack(lua_State* l) {
+  lua_getglobal(l, "LuaInterpreter");
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+  luaRunner->audioSink->start();
+  return 0;
+}
+
+int LuaRunner::stopJack(lua_State* l) {
+  lua_getglobal(l, "LuaInterpreter");
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+  luaRunner->audioSink->stop();
+  return 0;
+}
+
+int LuaRunner::setPanelLights(lua_State* l) {
+  lua_getglobal(l, "LuaInterpreter");
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+
+  lua_check_num_args(l, 1);
+  int state = luaL_checknumber(l, 1);
+  std::bitset<8> bitState(state);
+  luaRunner->panel->setDeviceState(LED_ARRAY, bitState);
+  return 0;
+
+}
+
+int LuaRunner::loadModule(lua_State* l) {
+  lua_getglobal(l, "LuaInterpreter");
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+
+  lua_check_num_args(l, 1);
+  const char* file = luaL_checkstring(l, 1);
+
+  luaRunner->setCurrentPage(file);
+  auto path = luaRunner->getPath() + file + ".lua";
+
+  lua_getglobal(l, CLEANUP);
+  if (lua_isfunction(l, -1)) {
+    if (lua_pcall(l, 0, 0, 0) != 0) {
+      std::cerr << "Lua error: " << lua_tostring(l, -1) << std::endl;
+    }
+  }
+
+  if (luaL_dofile(l, path.c_str()) != 0) {
+    std::cerr << "Failed to load script " << file << ".lua: " << lua_tostring(l, -1) << std::endl;
+  }
+
+  return 0;
+}
+
+int LuaRunner::setOSCTarget(lua_State* l) {
+  lua_getglobal(l, "LuaInterpreter");
+  auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+
+  lua_check_num_args(l, 1);
+  const char* ip_addr = luaL_checkstring(l, 1);
+
+  luaRunner->setIPTarget(ip_addr);
+  return 0;
 }

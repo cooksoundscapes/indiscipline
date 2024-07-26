@@ -18,9 +18,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(SOURCES
         src/main.cpp
         src/window.cpp
-        src/lua-functions.cpp
         src/lua-runner.cpp
         src/cairo-wrapper.cpp
+        src/cairo-lua-wrapper.cpp
         src/audio-sink.cpp
         src/osc-server.cpp
 )

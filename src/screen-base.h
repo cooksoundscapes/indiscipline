@@ -40,4 +40,5 @@ public:
   }
 
   virtual void loadFile(const char*) = 0;
+  virtual void schedulePrint() = 0;
 };

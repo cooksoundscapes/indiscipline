@@ -10,6 +10,7 @@
 #include "audio-sink-base.h"
 #include "hardware/panel-base.h"
 
+extern int lua_check_num_args(lua_State* l, int n) ;
 //----functions to be registered in lua state
 extern int _set_source_rgb(lua_State* l); 
 extern int _set_source_rgba(lua_State* l); 
@@ -46,7 +47,6 @@ class LuaRunner : public LuaRunnerBase
   int mouseButton{0};
 
   int screen_w, screen_h;
-  bool shouldPrint = false;
   bool resizing = false;
 
   lo_address client_osc_addr;
@@ -87,10 +87,6 @@ public:
   void setTable(std::string, std::vector<float>&) override;
   void resetLuaState() override;
   void triggerPanelCallback(std::string device, int pin, int value) override;
-
-  void schedulePrint() override {
-    shouldPrint = true;
-  }
 
   void setScreenSize(int w, int h) override {
     screen_w = w;
