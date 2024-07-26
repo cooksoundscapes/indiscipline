@@ -34,4 +34,10 @@ public:
     std::cout << "bOOOOHBYE\n";
     shouldQuit = true;
   }
+
+  std::shared_ptr<LuaRunnerBase> getLuaInterpreter() {
+    return luaInterpreter;
+  }
+
+  virtual void loadFile(const char*) = 0;
 };

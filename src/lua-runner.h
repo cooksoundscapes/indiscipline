@@ -34,26 +34,26 @@ extern int _destroy_surface(lua_State* l);
 extern int _set_line_cap(lua_State* l);
 extern int _hex_to_rgb(lua_State* l);
 
-class LuaRunner : public LuaRunnerBase {
+class LuaRunner : public LuaRunnerBase
+{
   lua_State* state;
   std::shared_ptr<AudioSinkBase> audioSink;
   std::shared_ptr<PanelBase> panel;
+  std::recursive_mutex mutex;
 
   std::string projectPath, defaultPage, currentPage;
- 
-  void setCurrentPage(std::string p);
-
-  std::recursive_mutex mutex;
   float mouseX{0}, mouseY{0};
   int mouseButton{0};
-
-  lo_address client_osc_addr;
-
-  void defineCallbacks();
 
   int screen_w, screen_h;
   bool shouldPrint = false;
   bool resizing = false;
+
+  lo_address client_osc_addr;
+
+  void defineCallbacks();
+  void globalFunction(const char*);
+  void setCurrentPage(std::string p);
 
 public:
   LuaRunner(int w, int h, std::string path, std::string ipTarget, std::string defaultPage);
@@ -62,29 +62,12 @@ public:
   void init();
 
   void setAudioSink(std::shared_ptr<AudioSinkBase> audsnk) { this->audioSink = audsnk; }
+
   void setPanel(std::shared_ptr<PanelBase> panel) { 
     this->panel = panel;
     panel->registerCallback(SEND_OSC, sendOsc);
     panel->registerCallback(DIRECT_CONTROL, directControl);
   }
-
-  void loadFile(std::string file) override;
-  void setGlobal(std::string name, double value) override;
-  void setGlobal(std::string name, std::string value) override;
-
-  void draw() override;
-  void loadFunction(std::string name, lua_CFunction fn);
-  void callFunction(std::string, std::vector<Param>&) override;
-  void callFunction(std::string);
-  void setTable(std::string, std::vector<float>&) override;
-  
-  void schedulePrint() override {
-    shouldPrint = true;
-  }
-
-  void resetLuaState() override;
-
-  void triggerPanelCallback(std::string device, int pin, int value) override;
 
   void setIPTarget(std::string ip) {
     LuaRunnerBase::setIPTarget(ip);
@@ -93,6 +76,20 @@ public:
   
   void setProjectPath(std::string path) {
 	  projectPath = path;
+  }
+
+  void loadFile(std::string file) override;
+  void setGlobal(std::string name, double value) override;
+  void setGlobal(std::string name, std::string value) override;
+  void draw() override;
+  void loadFunction(std::string name, lua_CFunction fn);
+  void callFunction(std::string, std::vector<Param>&) override;
+  void setTable(std::string, std::vector<float>&) override;
+  void resetLuaState() override;
+  void triggerPanelCallback(std::string device, int pin, int value) override;
+
+  void schedulePrint() override {
+    shouldPrint = true;
   }
 
   void setScreenSize(int w, int h) override {
@@ -108,6 +105,11 @@ public:
 
   void setMouseButton(int s) override {
     mouseButton = s;
+  }
+
+  void callFunction(std::string name) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    globalFunction(name.c_str());
   }
 
   std::string getPath() {return projectPath;}

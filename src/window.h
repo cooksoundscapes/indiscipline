@@ -28,5 +28,7 @@ public:
     frameDuration = 1000 / fps;
   }
 
+  void loadFile(const char*) override;
+
   void loop();
 };

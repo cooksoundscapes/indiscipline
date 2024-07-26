@@ -11,9 +11,9 @@ static void error_handler(int num, const char *msg, const char *path) {
 static int 
 navigate_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_message data, void* userData)
 {
-  auto luaRunner = (LuaRunnerBase*) userData;
+  auto window = (ScreenBase*) userData;
   auto target = &argv[0]->s;
-  luaRunner->loadFile(target);
+  window->loadFile(target);
   return 0;
 }
 
@@ -96,6 +96,11 @@ print_handler(const char* p, const char* types, lo_arg** argv, int argc, lo_mess
 Main function
 */
 void OscServer::init() {
+  if (!window) {
+    std::cerr << "[OscServer] Error: missing Window ref!;\n";
+    return;
+  }
+  auto luaRunner = window->getLuaInterpreter();
   if (!luaRunner) {
     std::cerr << "[OscServer] Error: missing Lua Interpreter;\n";
     return;
@@ -107,7 +112,7 @@ void OscServer::init() {
   }
 
   // add methods
-  lo_server_thread_add_method(thread, "/navigate", "s", navigate_handler, luaRunner.get());
+  lo_server_thread_add_method(thread, "/navigate", "s", navigate_handler, window.get());
   lo_server_thread_add_method(thread, "/param", NULL, param_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/buffer", NULL, buffer_handler, luaRunner.get());
   lo_server_thread_add_method(thread, "/panel", "sff", direct_input_handler, luaRunner.get());

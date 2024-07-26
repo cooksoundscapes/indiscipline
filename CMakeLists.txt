@@ -23,21 +23,24 @@ set(SOURCES
         src/cairo-wrapper.cpp
         src/audio-sink.cpp
         src/osc-server.cpp
-        src/spi-display.cpp
-        src/fb-display.cpp
+)
+
+option(USE_GPIO "use gpio" OFF)
+option(USE_SSD1306 "use OLED display (spi)" OFF)
+option(USE_FB "use direct framebuffer" OFF)
+
+if (USE_GPIO)
+    add_definitions(-DUSE_GPIO)
+    list(APPEND SOURCES
         src/hardware/panel.cpp
         src/hardware/pcf-8574.cpp
         #src/hardware/gpio --> this is for the non daemon library, probably never going to be used
         src/hardware/gpio-daemon.cpp
         src/hardware/ssd1306-spi.cpp
-)
-
-option(USE_GPIO "use gpio" ON)
-option(USE_SSD1306 "use OLED display (spi)" ON)
-option(USE_FB "use direct framebuffer" OFF)
-
-if (USE_GPIO)
-    add_definitions(-DUSE_GPIO)
+        src/spi-display.cpp
+        src/fb-display.cpp
+    )
+    target_link_libraries(indiscipline i2c pigpio pigpiod_if2)
 endif()
 if (USE_SSD1306)
     add_definitions(-DUSE_SSD1306)
@@ -45,6 +48,9 @@ endif()
 if (USE_FB)
     add_definitions(-DUSE_FB)
 endif()
+
+# making the code aware of the project dir:
+add_definitions(-DSRC_DIR="${CMAKE_SOURCE_DIR}")
 
 include_directories(indiscipline /usr/include/pango-1.0)
 include_directories(indiscipline /usr/include/glib-2.0)
@@ -59,9 +65,6 @@ install(TARGETS indiscipline DESTINATION /usr/bin)
  
 target_link_libraries(indiscipline
     jack
-    i2c
-    pigpio
-    pigpiod_if2
     rt
     lo
     lua

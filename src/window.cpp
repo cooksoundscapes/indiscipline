@@ -177,3 +177,7 @@ void Window::draw() {
   Cairo::flush();
   Cairo::finalize();
 }
+
+void Window::loadFile(const char* filename) {
+  luaInterpreter->loadFile(filename);
+}

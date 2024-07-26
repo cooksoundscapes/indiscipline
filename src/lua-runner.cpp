@@ -130,17 +130,21 @@ void LuaRunner::defineCallbacks() {
   };
 }
 
-void LuaRunner::loadFile(std::string file)
-{
-  std::lock_guard<std::recursive_mutex> lock(mutex);
-
-  // call "Cleanup" function declared at lua scripts
-  lua_getglobal(state, CLEANUP);
+// unprotected!
+void LuaRunner::globalFunction(const char* fn) {
+  lua_getglobal(state, fn);
   if (lua_isfunction(state, -1)) {
     if (lua_pcall(state, 0, 0, 0) != 0) {
       std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
     }
   }
+}
+
+void LuaRunner::loadFile(std::string file)
+{
+  std::lock_guard<std::recursive_mutex> lock(mutex);
+
+  globalFunction(CLEANUP);
 
   auto filepath = projectPath + file + ".lua";
 
@@ -187,12 +191,7 @@ void LuaRunner::draw() {
     lua_setglobal(state, SCREEN_H);
   }
 
-  lua_getglobal(state, DRAW);
-  if (lua_isfunction(state, -1)) {
-    if (lua_pcall(state, 0, 0, 0) != 0) {
-      std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
-    }
-  }
+  globalFunction(DRAW);
 
   if (shouldPrint) {
     Cairo::print();
@@ -224,18 +223,6 @@ void LuaRunner::callFunction(std::string name, std::vector<Param>& params)
 
     int argcount = params.size();
     if (lua_pcall(state, argcount, 0, 0) != 0) {
-      std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
-    }
-  }
-}
-
-void LuaRunner::callFunction(std::string name)
-{
-  std::lock_guard<std::recursive_mutex> lock(mutex);
-
-  lua_getglobal(state, name.c_str());
-  if (lua_isfunction(state, -1)) {
-    if (lua_pcall(state, 0, 0, 0) != 0) {
       std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
     }
   }
@@ -279,6 +266,7 @@ void LuaRunner::setCurrentPage(std::string page) {
   }
 }
 
+// this is used mostly for debugging purposes
 void LuaRunner::triggerPanelCallback(std::string device, int pin, int value)
 {
   if (currentPage == HOME_PAGE) {

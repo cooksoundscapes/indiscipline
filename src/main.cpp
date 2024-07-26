@@ -23,20 +23,11 @@
 #include <memory>
 #include <fstream>
 
-// define main graphics driver globally
-#ifdef USE_SSD1306
-  SPIDisplay graphics(OLED_DISPLAY_WIDTH, OLED_DISPLAY_HEIGHT);
-#else
-  #ifdef USE_FB
-    FramebufferDisplay graphics(WINDOW_WIDTH, WINDOW_HEIGHT);
-  #else
-    Window graphics(WINDOW_WIDTH, WINDOW_HEIGHT);
-  #endif
-#endif
+auto graphics = std::make_shared<Window>(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 void signalHandler(int signal) {
   if (signal == SIGINT) {
-    graphics.stop();
+    graphics->stop();
   }
 }
 
@@ -62,7 +53,11 @@ void setup(
     h = WINDOW_HEIGHT;
   #endif
   targetFps = TARGET_FPS;
-  luaPath = home + "/views/";
+  #ifdef SRC_DIR
+    luaPath = std::string(SRC_DIR) + "/views/";
+  #else
+    luaPath = home + "/views/";
+  #endif
   audio_channels = A_CHANNELS;
   default_view = HOME_PAGE;
 
@@ -111,7 +106,7 @@ int main()
   setup(width, height, targetFps, luaPath, ipTarget, audioChannels, defaultView);
   std::cout << "Rendering screen at " << width << 'x' << height << " at " << targetFps << "FPS;\nLua path is " << luaPath << ";\n";
 
-  graphics.setFps(targetFps);
+  graphics->setFps(targetFps);
 
   OscServer oscServer;
   auto luaInterpreter = std::make_shared<LuaRunner>(width, height, luaPath, ipTarget, defaultView);
@@ -128,17 +123,17 @@ int main()
     #ifdef USE_SSD1306
       // setup display device
       auto displayDevice = std::make_shared<SSD1306_SPI>(gpio);
-      graphics.setDevice(displayDevice);
+      graphics->setDevice(displayDevice);
     #endif
   #endif
 
   if (width > 0 && height > 0) {
-    graphics.setSize(width, height);
+    graphics->setSize(width, height);
   }
 
   // setup lua interpreter at graphics driver and OSC  
-  graphics.setLuaInterpreter(luaInterpreter);
-  oscServer.setLuaInterpreter(luaInterpreter);
+  graphics->setLuaInterpreter(luaInterpreter);
+  oscServer.setWindow(graphics);
 
   signal(SIGINT, signalHandler);
 
@@ -156,7 +151,7 @@ int main()
 
   luaInterpreter->init();
 
-  graphics.loop();
+  graphics->loop();
   
   return 0;
 }
