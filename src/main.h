@@ -7,7 +7,7 @@ constexpr const char* DIRECT_CONTROL = "direct-ctrl";
 constexpr const char* LUA_SETUP = "setup";
 constexpr const char* OSC_CLIENT = "7778";
 constexpr const char* OSC_SERV = "7777";
-constexpr int A_CHANNELS = 10;
+constexpr int A_CHANNELS = 8;
 
 constexpr int WINDOW_WIDTH = 320;
 constexpr int WINDOW_HEIGHT = 240;

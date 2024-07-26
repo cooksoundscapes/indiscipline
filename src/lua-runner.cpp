@@ -276,12 +276,13 @@ void LuaRunner::triggerPanelCallback(std::string device, int pin, int value)
 
 // retrieve audio buffer function from sink
 int LuaRunner::getAudioBuffer(lua_State* l) {
-  lua_getglobal(l, "app");
+  lua_getglobal(l, "LuaInterpreter");
   auto luaRunner = reinterpret_cast<LuaRunner*>(lua_touserdata(l, -1));
   lua_pop(l, 1);
 
   lua_check_num_args(l, 1);
   double channel = luaL_checknumber(l, 1);
+
   auto buffer = luaRunner->audioSink->getBuffer(channel);
   lua_newtable(l);
 
@@ -292,7 +293,7 @@ int LuaRunner::getAudioBuffer(lua_State* l) {
     }
   }
   return 1;
-}
+} 
 
 int LuaRunner::getBufferSize(lua_State* l) {
   lua_getglobal(l, "LuaInterpreter");
