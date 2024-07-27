@@ -24,8 +24,10 @@ void LuaRunner::init() {
   lua_pushlightuserdata(state, this);
   lua_setglobal(state, "LuaInterpreter");
   // register screen size globals for UI reference
-  setGlobal(SCREEN_W, screen_w);
-  setGlobal(SCREEN_H, screen_h);
+  lua_pushnumber(state, screen_w);
+  lua_setglobal(state, SCREEN_W);
+  lua_pushnumber(state, screen_h);
+  lua_setglobal(state, SCREEN_H);
 
   // cairo drawing functions
   loadFunction("set_source_rgb", &_set_source_rgb);
@@ -165,6 +167,13 @@ void LuaRunner::setGlobal(std::string varname, std::string value) {
   std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_pushstring(state, value.c_str());
+  lua_setglobal(state, varname.c_str());
+}
+
+void LuaRunner::setGlobal(std::string varname, void* userData) {
+  std::lock_guard<std::recursive_mutex> lock(mutex);
+
+  lua_pushlightuserdata(state, userData);
   lua_setglobal(state, varname.c_str());
 }
 

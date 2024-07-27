@@ -1,4 +1,3 @@
-#include "lua-runner-base.h"
 #include "main.h"
 #include "window.h"
 #include "cairo-wrapper.h"
@@ -184,4 +183,33 @@ void Window::draw() {
 
 void Window::loadFile(const char* filename) {
   luaInterpreter->loadFile(filename);
+}
+
+int getTableIntValue(lua_State* l, int index, const char* k) {
+  lua_pushstring(l, k);
+  lua_gettable(l, index);
+  int v = luaL_checknumber(l, -1);
+  lua_pop(l, 1);
+  return v;
+}
+
+// creates a component and return it's ID
+int Window::_addComponent(lua_State* l) {
+  lua_getglobal(l, "Window");
+  auto window = reinterpret_cast<Window*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+
+  luaL_checktype(l, 1, LUA_TTABLE);
+
+  int x = getTableIntValue(l, 1, "x");
+  int y = getTableIntValue(l, 1, "y");
+  int w = getTableIntValue(l, 1, "w");
+  int h = getTableIntValue(l, 1, "h");
+
+  lua_pushvalue(l, 1);
+  int tableRef = luaL_ref(l, LUA_REGISTRYINDEX);
+
+  int id = window->addComponent(x, y, w, h, tableRef);
+  lua_pushnumber(l, id);
+  return 1;
 }

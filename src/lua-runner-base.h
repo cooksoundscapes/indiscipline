@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <lua.h>
+#include <lua.hpp>
 #include <vector>
 #include <mutex>
 
@@ -13,6 +13,8 @@ public:
   virtual void loadFile(std::string file) = 0;
   virtual void setGlobal(std::string, double) = 0;
   virtual void setGlobal(std::string, std::string) = 0;
+  virtual void setGlobal(std::string name, void* userData) = 0;
+  virtual void loadFunction(std::string name, lua_CFunction fn) = 0;
   virtual void draw() = 0;
 
   void setIPTarget(std::string ip) {ipTarget = ip;}

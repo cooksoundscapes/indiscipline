@@ -1,6 +1,5 @@
 #pragma once
 #include "main.h"
-#include <lua.hpp>
 #include <string>
 #include <memory>
 #include <mutex>
@@ -10,7 +9,7 @@
 #include "audio-sink-base.h"
 #include "hardware/panel-base.h"
 
-extern int lua_check_num_args(lua_State* l, int n) ;
+extern int lua_check_num_args(lua_State* l, int n);
 //----functions to be registered in lua state
 extern int _set_source_rgb(lua_State* l); 
 extern int _set_source_rgba(lua_State* l); 
@@ -81,8 +80,9 @@ public:
   void loadFile(std::string file) override;
   void setGlobal(std::string name, double value) override;
   void setGlobal(std::string name, std::string value) override;
+  void setGlobal(std::string name, void* userData) override;
   void draw() override;
-  void loadFunction(std::string name, lua_CFunction fn);
+  void loadFunction(std::string name, lua_CFunction fn) override;
   void callFunction(std::string, std::vector<Param>&) override;
   void setTable(std::string, std::vector<float>&) override;
   void resetLuaState() override;

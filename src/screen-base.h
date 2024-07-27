@@ -23,7 +23,7 @@ public:
 
   virtual ~ScreenBase() {}
 
-  void setLuaInterpreter(std::shared_ptr<LuaRunnerBase> LIntr) {
+  virtual void setLuaInterpreter(std::shared_ptr<LuaRunnerBase> LIntr) {
     this->luaInterpreter = LIntr;
   }
 

@@ -3,8 +3,6 @@
 #include <cstring>
 #include <iostream>
 #include <bitset>
-#include <lauxlib.h>
-#include <lua.h>
 
 int lua_check_num_args(lua_State* l, int n) {
   if (lua_gettop(l) != n) {
