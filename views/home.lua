@@ -1,14 +1,14 @@
-local function rms(buffer)
-    local rms = 0
-    for i,s in ipairs(buffer) do
-        rms = rms + (s ^ 2)
+local knob = require("knob")
+local k1 = add_component({
+    x = 50,
+    y = 50,
+    w = 50,
+    h = 50,
+    level = 30,
+    draw = function(self)
+        --[[Color("#ff0000")
+        rectangle(0, 0, 50, 50)
+        fill()]]
+        knob(25, 25, 45, 0, 100, self.level, "#fafafa", "#2e2e2e", "#ee2233")
     end
-    rms = math.sqrt(rms/#buffer)
-    return rms
-end
-
-function Draw()
-   local b = get_audio_buffer(1)
-   Color("#ffffff")
-   text(string.format("%.2fdB", rms(b)))
-end
+})

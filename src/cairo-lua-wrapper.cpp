@@ -17,7 +17,6 @@ int _set_source_rgb(lua_State* l) {
   double g = luaL_checknumber(l, 2);
   double b = luaL_checknumber(l, 3);
   Cairo::set_source_rgb(r, g, b);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -28,7 +27,6 @@ int _set_source_rgba(lua_State* l) {
   double b = luaL_checknumber(l, 3);
   double a = luaL_checknumber(l, 4);
   Cairo::set_source_rgba(r, g, b, a);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -49,7 +47,6 @@ int _rectangle(lua_State* l) {
   double w = luaL_checknumber(l, 3);
   double h = luaL_checknumber(l, 4);
   Cairo::rectangle(x, y, w, h);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -61,7 +58,6 @@ int _arc(lua_State* l) {
   double ang1 = luaL_checknumber(l, 4);
   double ang2 = luaL_checknumber(l, 5);
   Cairo::arc(xc, yc, rad, ang1, ang2);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -70,7 +66,6 @@ int _move_to(lua_State* l) {
   double x = luaL_checknumber(l, 1);
   double y = luaL_checknumber(l, 2);
   Cairo::move_to(x, y);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -79,7 +74,6 @@ int _line_to(lua_State* l) {
   double x = luaL_checknumber(l, 1);
   double y = luaL_checknumber(l, 2);
   Cairo::line_to(x, y);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -88,7 +82,6 @@ int _rel_move_to(lua_State* l) {
   double x = luaL_checknumber(l, 1);
   double y = luaL_checknumber(l, 2);
   Cairo::rel_move_to(x, y);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -97,7 +90,6 @@ int _rel_line_to(lua_State* l) {
   double x = luaL_checknumber(l, 1);
   double y = luaL_checknumber(l, 2);
   Cairo::rel_line_to(x, y);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -105,31 +97,26 @@ int _set_line_width(lua_State* l) {
   lua_check_num_args(l, 1);
   double w = luaL_checknumber(l, 1);
   Cairo::set_line_width(w);
-  lua_settop(l, 0);
   return 0;
 }
 
 int _paint(lua_State* l) {
   Cairo::paint();
-  lua_settop(l, 0);
   return 0;
 }
 
 int _fill(lua_State* l) {
   Cairo::fill();
-  lua_settop(l, 0);
   return 0;
 }
 
 int _fill_preserve(lua_State* l) {
   Cairo::fill_preserve();
-  lua_settop(l, 0);
   return 0;
 }
 
 int _stroke(lua_State* l) {
   Cairo::stroke();
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -137,7 +124,6 @@ int _set_operator(lua_State* l) {
   lua_check_num_args(l, 1);
   const char* op = luaL_checkstring(l, 1);
   Cairo::set_operator(op);
-  lua_settop(l, 0);
   return 0;
 }
 
@@ -201,7 +187,6 @@ int _create_surface(lua_State* l) {
   double height = luaL_checknumber(l, 3);
 
   Cairo::create_additional_surface(name, width, height);
-  lua_settop(l, 0);
   return 0;
 }
 int _draw_surface(lua_State* l) {
@@ -211,7 +196,6 @@ int _draw_surface(lua_State* l) {
   double y = luaL_checknumber(l, 3);
 
   Cairo::draw_surface(name, x, y);
-  lua_settop(l, 0);
   return 0;
 }
 

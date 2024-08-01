@@ -42,6 +42,9 @@ Window::Window(int w, int h) : ScreenBase(w, h)
 
 Window::~Window() 
 {
+  for (auto& comp : components) {
+    SDL_DestroyTexture(comp.texture);
+  }
   SDL_DestroyTexture(screen);
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);    
@@ -153,63 +156,95 @@ void Window::handleEvents() {
 void Window::updateWindow() {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
-  draw();
-  SDL_RenderCopy(renderer, screen, NULL, NULL);
+  luaInterpreter->updateGlobalVars();
+  for (auto& comp : components) {
+    SDL_RenderCopy(renderer, comp.texture, NULL, &comp.rect);
+  }
   SDL_RenderPresent(renderer);
 }
 
-void Window::draw() {
-  //prepare texture data
+void Window::loadFile(const char* filename) {
+  for (auto& comp : components) {
+    SDL_DestroyTexture(comp.texture);
+  }
+  components.clear();
+  luaInterpreter->loadFile(filename);
+}
+
+int Window::addComponent(int x, int y, int w, int h, int luaRef) {
+  SDL_Texture* new_t = SDL_CreateTexture(
+    renderer,
+    SDL_PIXELFORMAT_ARGB8888,
+    SDL_TEXTUREACCESS_STREAMING,
+    w,
+    h
+  );
+  components.push_back({{x, y, w, h}, new_t, luaRef});
+  return components.size() - 1;
+}
+
+void Window::prepareComponentTexture(Component& comp) {
   void* rawData;
   int stride;
-  SDL_LockTexture(screen, NULL, &rawData, &stride);
+  SDL_LockTexture(comp.texture, NULL, &rawData, &stride);
   auto pixels = static_cast<unsigned char*>(rawData);
+  Cairo::createSurfaceForData(comp.rect.w, comp.rect.h, pixels, stride);
+}
 
-  Cairo::createSurfaceForData(width, height, pixels, stride);
-
-  if (luaInterpreter != nullptr) {
-    luaInterpreter->draw();
-  }
-  if (shouldPrint) {
-    Cairo::print();
-    shouldPrint = false;
-  }
-
-  //end drawing
-  SDL_UnlockTexture(screen);
+void Window::finishComponentDraw(Component& comp) {
+  SDL_UnlockTexture(comp.texture);
   Cairo::flush();
   Cairo::finalize();
 }
 
-void Window::loadFile(const char* filename) {
-  luaInterpreter->loadFile(filename);
-}
-
-int getTableIntValue(lua_State* l, int index, const char* k) {
-  lua_pushstring(l, k);
-  lua_gettable(l, index);
-  int v = luaL_checknumber(l, -1);
-  lua_pop(l, 1);
-  return v;
-}
+/**
+ * Lua Logic
+ */
 
 // creates a component and return it's ID
 int Window::_addComponent(lua_State* l) {
+  // retrieve Window* from the registered global variabled
   lua_getglobal(l, "Window");
   auto window = reinterpret_cast<Window*>(lua_touserdata(l, -1));
   lua_pop(l, 1);
 
+  // checks if 1st item is a table
   luaL_checktype(l, 1, LUA_TTABLE);
 
-  int x = getTableIntValue(l, 1, "x");
-  int y = getTableIntValue(l, 1, "y");
-  int w = getTableIntValue(l, 1, "w");
-  int h = getTableIntValue(l, 1, "h");
+  // retrieve
+  int x = LuaRunnerBase::getTableIntValue(l, 1, "x");
+  int y = LuaRunnerBase::getTableIntValue(l, 1, "y");
+  int w = LuaRunnerBase::getTableIntValue(l, 1, "w");
+  int h = LuaRunnerBase::getTableIntValue(l, 1, "h");
 
+  // create a reference for the component table and keep it in the Component struct
   lua_pushvalue(l, 1);
   int tableRef = luaL_ref(l, LUA_REGISTRYINDEX);
-
   int id = window->addComponent(x, y, w, h, tableRef);
+
+  window->prepareComponentTexture(window->components[id]);
+  LuaRunnerBase::callTableFunction(l, -1, "draw", 0, 0);
+  window->finishComponentDraw(window->components[id]);
+
+  lua_settop(l, 0);
+
+  // return the component ID to the lua script
   lua_pushnumber(l, id);
   return 1;
+}
+
+int Window::_markDirty(lua_State* l) {
+  lua_getglobal(l, "Window");
+  auto window = reinterpret_cast<Window*>(lua_touserdata(l, -1));
+  lua_pop(l, 1);
+
+  if (lua_gettop(l) != 1) {
+    return luaL_error(l, "error: wrong number of arguments;");
+  }
+  int textureIndex = luaL_checknumber(l, 1);
+
+  window->addDirtyTexture(textureIndex);
+
+  lua_settop(l, 0);
+  return 0;
 }

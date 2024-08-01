@@ -47,6 +47,7 @@ class LuaRunner : public LuaRunnerBase
 
   int screen_w, screen_h;
   bool resizing = false;
+  bool mouseMoved = false;
 
   lo_address client_osc_addr;
 
@@ -81,7 +82,7 @@ public:
   void setGlobal(std::string name, double value) override;
   void setGlobal(std::string name, std::string value) override;
   void setGlobal(std::string name, void* userData) override;
-  void draw() override;
+  void updateGlobalVars() override;
   void loadFunction(std::string name, lua_CFunction fn) override;
   void callFunction(std::string, std::vector<Param>&) override;
   void setTable(std::string, std::vector<float>&) override;
@@ -89,17 +90,19 @@ public:
   void triggerPanelCallback(std::string device, int pin, int value) override;
 
   void setScreenSize(int w, int h) override {
+    resizing = true;
     screen_w = w;
     screen_h = h;
-    resizing = true;
   }
 
   void setMousePos(float x, float y) override {
+    mouseMoved = true;
     mouseX = x;
     mouseY = y;
   }
 
   void setMouseButton(int s) override {
+    mouseMoved = true;
     mouseButton = s;
   }
 

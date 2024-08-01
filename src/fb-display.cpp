@@ -29,7 +29,7 @@ void FramebufferDisplay::draw(int stride) {
     stride
   );
   if (luaInterpreter != nullptr) {
-    luaInterpreter->draw();
+    luaInterpreter->updateGlobalVars();
   }
   Cairo::flush();
   Cairo::finalize();

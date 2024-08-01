@@ -77,8 +77,6 @@ void LuaRunner::init() {
   } else {
     std::cerr << "Failed to load script " << luaSetupPath << ": " << lua_tostring(state, -1) << std::endl;
   }
-
-  loadFile(defaultPage);
 }
 
 LuaRunner::~LuaRunner() {
@@ -177,17 +175,20 @@ void LuaRunner::setGlobal(std::string varname, void* userData) {
   lua_setglobal(state, varname.c_str());
 }
 
-void LuaRunner::draw() {
+void LuaRunner::updateGlobalVars() {
   std::lock_guard<std::recursive_mutex> lock(mutex);
 
   #ifndef USE_FB
   #ifndef USE_SSD1306
+  if (mouseMoved) {
+    mouseMoved = false;
     lua_pushnumber(state, mouseX);
     lua_setglobal(state, "mouse_x");
     lua_pushnumber(state, mouseY);
     lua_setglobal(state, "mouse_y");
     lua_pushnumber(state, mouseButton);
     lua_setglobal(state, "mouse_button");
+  }
   #endif
   #endif
 
@@ -198,8 +199,6 @@ void LuaRunner::draw() {
     lua_pushnumber(state, screen_h);
     lua_setglobal(state, SCREEN_H);
   }
-
-  globalFunction(DRAW);
 }
 
 void LuaRunner::loadFunction(std::string name, lua_CFunction fn)
@@ -226,7 +225,7 @@ void LuaRunner::callFunction(std::string name, std::vector<Param>& params)
 
     int argcount = params.size();
     if (lua_pcall(state, argcount, 0, 0) != 0) {
-      std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
+      std::cerr << "Lua error: " <<   lua_tostring(state, -1) << std::endl;
     }
   }
 }

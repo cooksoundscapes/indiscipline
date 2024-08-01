@@ -110,8 +110,9 @@ int main()
 
   OscServer oscServer;
   auto luaInterpreter = std::make_shared<LuaRunner>(width, height, luaPath, ipTarget, defaultView);
-  auto audioSink = std::make_shared<AudioSink>(audioChannels);
+  luaInterpreter->init();
 
+  auto audioSink = std::make_shared<AudioSink>(audioChannels);
   luaInterpreter->setAudioSink(audioSink);
 
   #ifdef USE_GPIO
@@ -149,7 +150,7 @@ int main()
     #endif
   #endif
 
-  luaInterpreter->init();
+  luaInterpreter->loadFile(defaultView);
 
   graphics->loop();
   
