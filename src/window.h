@@ -21,19 +21,20 @@ class Window : public ScreenBase {
     SDL_Rect rect;
     SDL_Texture* texture;
     int luaTableRef;
+    uint surfaceId;
   };
 
   std::vector<Component> components;
   std::vector<unsigned int> dirtyTexturesIds;
-  std::recursive_mutex redrawMutex;
+  std::vector<Component> liveComponents;
 
   int addComponent(int x, int y, int w, int h, int luaRef);
-  void prepareComponentTexture(Component& component);
-  void finishComponentDraw(Component& component);
+  void addLiveComponent(int x, int y, int w, int h, int luaRef);  
+  void drawComponent(uint textureId);
+  void drawLiveComponent(Component&);
 
   void addDirtyTexture(int textureIndex)
   {
-    std::lock_guard<std::recursive_mutex> lock(redrawMutex);
     if (textureIndex < components.size()) {
      dirtyTexturesIds.push_back(textureIndex);
     }
@@ -56,7 +57,7 @@ public:
     this->luaInterpreter = LIntr;
     LIntr->setGlobal("Window", this);
     LIntr->loadFunction("add_component", &Window::_addComponent);
-    LIntr->loadFunction("mark_dirty", &Window::_markDirty);
+    LIntr->loadFunction("add_live_component", &Window::_addLiveComponent);
   }
 
   void loadFile(const char*) override;
@@ -69,5 +70,5 @@ public:
 
   // functions to be registered at lua State
   static int _addComponent(lua_State*);
-  static int _markDirty(lua_State*);
+  static int _addLiveComponent(lua_State*);
 };

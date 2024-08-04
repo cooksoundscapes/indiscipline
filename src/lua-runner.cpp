@@ -47,9 +47,6 @@ void LuaRunner::init() {
   loadFunction("stroke", &_stroke);
   loadFunction("set_operator", &_set_operator);
   loadFunction("set_line_width", &_set_line_width);
-  loadFunction("create_surface", &_create_surface);
-  loadFunction("draw_surface", &_draw_surface);
-  loadFunction("destroy_surface", &_destroy_surface);
   loadFunction("set_line_cap", &_set_line_cap);
   loadFunction("hex", &_hex_to_rgb);
 
@@ -137,6 +134,7 @@ void LuaRunner::globalFunction(const char* fn) {
       std::cerr << "Lua error: " << lua_tostring(state, -1) << std::endl;
     }
   }
+  lua_settop(state, 0);
 }
 
 void LuaRunner::loadFile(std::string file)
@@ -228,6 +226,8 @@ void LuaRunner::callFunction(std::string name, std::vector<Param>& params)
       std::cerr << "Lua error: " <<   lua_tostring(state, -1) << std::endl;
     }
   }
+
+  lua_settop(state, 0);
 }
 
 void LuaRunner::setTable(std::string name, std::vector<float>& buff)
@@ -255,6 +255,18 @@ void LuaRunner::setTable(std::string name, std::vector<float>& buff)
     std::cerr << "Error calling Lua function: " << errorMsg << '\n';
     lua_pop(state, 1); // Pop the error message from the stack
   }
+}
+
+void LuaRunner::callTableRefFunction(int tableRef, const char* fn)
+{
+  int ssize = lua_gettop(state);
+  std::lock_guard<std::recursive_mutex> lock(mutex);
+
+  lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
+
+  callTableFunction(state, 1, fn, 0, 0);
+
+  lua_settop(state, ssize);
 }
 
 void LuaRunner::setCurrentPage(std::string page) {

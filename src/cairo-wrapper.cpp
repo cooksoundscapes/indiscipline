@@ -13,7 +13,9 @@ cairo_surface_t* Cairo::surface = nullptr;
   _cairo_format Cairo::defaultFormat = CAIRO_FORMAT_ARGB32;
 #endif
 
-std::unordered_map<std::string, cairo_surface_t*> Cairo::extraSurfaces;
+std::unordered_map<uint, Cairo::Surface> Cairo::surfaces = {
+  {0, {nullptr, nullptr}} // default
+};
 std::unordered_map<std::string, cairo_operator_t> Cairo::operators = {
   {"clear", CAIRO_OPERATOR_CLEAR},
   {"source", CAIRO_OPERATOR_SOURCE},
@@ -60,17 +62,52 @@ int Cairo::getStrideForWidth(int width) {
   return cairo_format_stride_for_width(defaultFormat, width);
 }
 
-void Cairo::createSurfaceForData(int w, int h, unsigned char* pixels, int stride)
+uint Cairo::addSurface() {
+  uint id = surfaces.size() + 1;
+  surfaces.insert({id, {nullptr, nullptr}});
+  return id;
+}
+
+void Cairo::setSurface(uint id) {
+  if (surfaces.find(id) != surfaces.end()) {
+    cr = surfaces[id].cr;
+    surface = surfaces[id].surface;
+  }
+}
+
+void Cairo::setDefaultSurface() {
+  setSurface(0);
+}
+
+void Cairo::createSurfaceForData(int surf_id, int w, int h, unsigned char* pixels, int stride)
 {
-  surface = cairo_image_surface_create_for_data(
+  surfaces[surf_id].surface = cairo_image_surface_create_for_data(
     pixels,
     defaultFormat,
     w, h, stride
   );
-  cr = cairo_create(surface);
-  cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
-  cairo_paint(cr);
-  cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+  surfaces[surf_id].cr = cairo_create(surfaces[surf_id].surface);
+  clearSurface(surf_id);
+}
+
+unsigned char* Cairo::getSurfaceData(int surfId) {
+  cairo_surface_t* surface = surfaces[surfId].surface;
+  return cairo_image_surface_get_data(surface);
+}
+
+void Cairo::clearSurface(int surfId) {
+  cairo_set_operator(surfaces[surfId].cr, CAIRO_OPERATOR_CLEAR);
+  cairo_paint(surfaces[surfId].cr);
+  cairo_set_operator(surfaces[surfId].cr, CAIRO_OPERATOR_OVER);
+}
+
+void Cairo::destroyAllSurfaces() {
+  for (auto& surf : surfaces) {
+    if (surf.second.cr)
+      cairo_destroy(surf.second.cr);
+    if (surf.second.surface)
+      cairo_surface_destroy(surf.second.surface);
+  }
 }
 
 void Cairo::print() {
@@ -89,22 +126,14 @@ void Cairo::print() {
 }
 
 void Cairo::finalize() {
-  if (cr)
-    cairo_destroy(cr);
-  if (surface)
-    cairo_surface_destroy(surface);
+  if (surfaces[0].cr)
+    cairo_destroy(surfaces[0].cr);
+  if (surfaces[0].surface)
+    cairo_surface_destroy(surfaces[0].surface);
 }
 
 void Cairo::flush() {
   cairo_surface_flush(surface);
-}
-
-void Cairo::clearExtraSurfaces() {
-  for (auto entry : extraSurfaces) {
-    if (entry.second) 
-      cairo_surface_destroy(entry.second);
-    extraSurfaces.erase(entry.first);
-  }
 }
 
 void Cairo::set_source_rgb(double r, double g, double b) {
@@ -198,35 +227,4 @@ void Cairo::text(TextParams& params)
   pango_cairo_show_layout(cr, layout);
 
   g_object_unref(layout);
-}
-
-void Cairo::create_additional_surface(std::string name, double w, double h) {
-  auto it = extraSurfaces.find(name);
-  if (it != extraSurfaces.end()) {
-    destroy_surface(name);
-  }
-
-  extraSurfaces.insert({
-    name,
-    cairo_image_surface_create(defaultFormat, w, h)
-  });
-  cr = cairo_create(extraSurfaces[name]);
-  cairo_close_path(cr);
-}
-
-void Cairo::draw_surface(std::string name, double x, double y)
-{
-  auto it = extraSurfaces.find(name);
-  if (it == extraSurfaces.end()) return;
-
-  cairo_set_source_surface(cr, extraSurfaces[name], x, y);
-  cairo_paint(cr);
-}
-
-void Cairo::destroy_surface(std::string name) {
-  auto it = extraSurfaces.find(name);
-  if (it == extraSurfaces.end()) return;
-
-  cairo_surface_destroy(extraSurfaces[name]);
-  extraSurfaces.erase(name);
 }

@@ -19,6 +19,7 @@ set(SOURCES
         src/main.cpp
         src/window.cpp
         src/lua-runner.cpp
+        src/lua-runner-base.cpp
         src/cairo-wrapper.cpp
         src/cairo-lua-wrapper.cpp
         src/audio-sink.cpp

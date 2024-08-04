@@ -28,9 +28,6 @@ extern int _fill_preserve(lua_State* l);
 extern int _stroke(lua_State* l);
 extern int _set_operator(lua_State* l);
 extern int _text(lua_State* l);
-extern int _create_surface(lua_State* l);
-extern int _draw_surface(lua_State* l);
-extern int _destroy_surface(lua_State* l);
 extern int _set_line_cap(lua_State* l);
 extern int _hex_to_rgb(lua_State* l);
 
@@ -88,6 +85,7 @@ public:
   void setTable(std::string, std::vector<float>&) override;
   void resetLuaState() override;
   void triggerPanelCallback(std::string device, int pin, int value) override;
+  void callTableRefFunction(int, const char*) override;
 
   void setScreenSize(int w, int h) override {
     resizing = true;

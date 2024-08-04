@@ -89,6 +89,7 @@
   "Lua.diagnostics.globals": [
     "set_source_rgb",
     "set_source_rgba",
+    "new_path",
     "set_line_width",
     "rectangle",
     "arc",
@@ -100,6 +101,7 @@
     "paint",
     "fill",
     "stroke",
+    "fill_preserve",
     "screen_w",
     "screen_h",
     "app",
@@ -108,12 +110,10 @@
     "hex",
     "fps",
     "load_module",
-    "create_surface",
-    "finish_surface",
-    "draw_surface",
-    "destroy_surface",
     "set_line_cap",
     "jack_start",
-    "jack_stop"
+    "jack_stop",
+    "add_component",
+    "add_live_component"
   ]
 }

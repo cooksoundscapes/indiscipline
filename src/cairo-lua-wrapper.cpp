@@ -180,33 +180,6 @@ int _text(lua_State* l) {
   return 0;
 }
 
-int _create_surface(lua_State* l) {
-  lua_check_num_args(l, 3);
-  const char* name = luaL_checkstring(l, 1);
-  double width = luaL_checknumber(l, 2);
-  double height = luaL_checknumber(l, 3);
-
-  Cairo::create_additional_surface(name, width, height);
-  return 0;
-}
-int _draw_surface(lua_State* l) {
-  lua_check_num_args(l, 3);
-  const char* name = luaL_checkstring(l, 1);
-  double x = luaL_checknumber(l, 2);
-  double y = luaL_checknumber(l, 3);
-
-  Cairo::draw_surface(name, x, y);
-  return 0;
-}
-
-int _destroy_surface(lua_State* l) {
-  lua_check_num_args(l, 1);
-  const char* name = luaL_checkstring(l, 1);
-  
-  Cairo::destroy_surface(name);
-  return 0;
-}
-
 int _set_line_cap(lua_State* l) {
   lua_check_num_args(l, 1);
   const char* type = luaL_checkstring(l, 1);
