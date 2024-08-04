@@ -1,6 +1,6 @@
 #! /bin/bash
 gcc -fPIC -o time.o -c time.c -Ilua &&
-gcc -fpic -shared -o libtime.so time.o -Llua -llua &&
+gcc -fpic -shared -o time.so time.o -Llua -llua &&
 
-mv time.so ../lib/ &&
-rm time.o
+rm time.o &&
+mv time.so ../
