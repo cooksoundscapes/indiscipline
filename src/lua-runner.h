@@ -104,7 +104,7 @@ public:
     mouseButton = s;
   }
 
-  void callFunction(std::string name) {
+  void callFunction(std::string name) override {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     globalFunction(name.c_str());
   }

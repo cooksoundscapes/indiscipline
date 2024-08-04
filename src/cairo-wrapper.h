@@ -5,14 +5,15 @@
 #include <string>
 
 namespace Cairo {
-  extern cairo_t* cr;
-  extern cairo_surface_t* surface;
 
   struct Surface {
     cairo_t* cr;
     cairo_surface_t* surface;
   };
   extern std::unordered_map<uint, Surface> surfaces;
+  extern uint current_surface;
+  extern cairo_t* cr();
+  extern cairo_surface_t* surface();
 
   extern _cairo_format defaultFormat;
   extern std::unordered_map<std::string, cairo_operator_t> operators;
@@ -25,9 +26,9 @@ namespace Cairo {
   extern void setSurface(uint);
   extern void setDefaultSurface();
 
-  extern void createSurfaceForData(int surf_id, int w, int h, unsigned char* pixels, int stride);
-  extern unsigned char* getSurfaceData(int);
-  extern void clearSurface(int);
+  extern void createSurfaceForData(int w, int h, unsigned char* pixels, int stride);
+  extern unsigned char* getSurfaceData();
+  extern void clearSurface();
   extern void finalize();
   extern void destroyAllSurfaces();
   extern void flush();
@@ -57,7 +58,6 @@ namespace Cairo {
     const char * alignment;
     int size;
     int width;
-    bool centered;
     bool enableAntiAlias;
   };
   extern void text(TextParams&);

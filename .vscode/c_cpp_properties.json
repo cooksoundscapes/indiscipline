@@ -10,7 +10,11 @@
                 "/usr/include/harfbuzz",
                 "/usr/include/cairo"
             ],
-            "defines": [],
+            "defines": [
+                "USE_FB",
+                "USE_GPIO",
+                "SRC_DIR=\"${CMAKE_SOURCE_DIR}\""
+            ],
             "compilerPath": "/usr/bin/gcc",
             "intelliSenseMode": "linux-gcc-x64"
         }

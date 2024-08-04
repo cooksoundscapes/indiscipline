@@ -32,6 +32,9 @@ Window::Window(int w, int h) : ScreenBase(w, h)
   IMG_Init(IMG_INIT_PNG);
   TTF_Init();
 
+  // hide mouse - useful for RPI!
+  SDL_ShowCursor(0);
+
   SDL_version v;
   SDL_GetVersion(&v);
   printf("Linked with SDL version: %d.%d.%d\n", v.major, v.minor, v.patch);
@@ -218,7 +221,8 @@ void Window::addLiveComponent(int x, int y, int w, int h, int luaRef) {
   SDL_LockTexture(new_t, NULL, &pixelData, &stride);
   uint surfaceId = Cairo::addSurface();
 
-  Cairo::createSurfaceForData(surfaceId, w, h, static_cast<unsigned char*>(pixelData), stride);
+  Cairo::setSurface(surfaceId);
+  Cairo::createSurfaceForData(w, h, static_cast<unsigned char*>(pixelData), stride);
   SDL_UnlockTexture(new_t);
 
   liveComponents.push_back({{x, y, w, h}, new_t, luaRef, surfaceId});
@@ -231,10 +235,9 @@ void Window::drawComponent(uint textureId) {
   void* rawData;
   int stride;
   SDL_LockTexture(comp.texture, NULL, &rawData, &stride);
-  auto pixels = static_cast<unsigned char*>(rawData);
-  Cairo::createSurfaceForData(0, comp.rect.w, comp.rect.h, pixels, stride);
   Cairo::setDefaultSurface();
-  
+  Cairo::createSurfaceForData(comp.rect.w, comp.rect.h, static_cast<unsigned char*>(rawData), stride);
+
   //draw
   luaInterpreter->callTableRefFunction(comp.luaTableRef, "draw");
   Cairo::flush();
@@ -249,15 +252,15 @@ void Window::drawLiveComponent(Component& component) {
   void* pixelData;
   int stride;
   SDL_LockTexture(component.texture, NULL, &pixelData, &stride);
-  Cairo::clearSurface(component.surfaceId);
   Cairo::setSurface(component.surfaceId);
+  Cairo::clearSurface();
 
   //draw
   luaInterpreter->callTableRefFunction(component.luaTableRef, "draw");
-  Cairo::flush();  
+  Cairo::flush();
   
   //copy buffers and finish
-  auto refreshedSurface = Cairo::getSurfaceData(component.surfaceId);
+  auto refreshedSurface = Cairo::getSurfaceData();
   memcpy(refreshedSurface, pixelData, stride * component.rect.h);
   SDL_UnlockTexture(component.texture);
 }

@@ -28,6 +28,8 @@ public:
   using ParamList = std::vector<Param>;
 
   virtual void callFunction(std::string, std::vector<Param>&) = 0;
+  virtual void callFunction(std::string) = 0;
+
   virtual void setTable(std::string, std::vector<float>&) = 0;
   virtual void triggerPanelCallback(std::string device, int pin, int value) = 0;
   virtual void callTableRefFunction(int tableRef, const char* fn_name) = 0;

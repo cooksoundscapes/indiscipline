@@ -37,17 +37,20 @@ if (USE_GPIO)
         src/hardware/pcf-8574.cpp
         #src/hardware/gpio --> this is for the non daemon library, probably never going to be used
         src/hardware/gpio-daemon.cpp
-        src/hardware/ssd1306-spi.cpp
-        src/spi-display.cpp
-        src/fb-display.cpp
     )
-    target_link_libraries(indiscipline i2c pigpio pigpiod_if2)
 endif()
 if (USE_SSD1306)
     add_definitions(-DUSE_SSD1306)
+    list(APPEND SOURCES
+        src/spi-display.cpp
+        src/hardware/ssd1306-spi.cpp
+    )
 endif()
 if (USE_FB)
     add_definitions(-DUSE_FB)
+    list(APPEND SOURCES
+        src/fb-display.cpp
+    )
 endif()
 
 # making the code aware of the project dir:
@@ -78,3 +81,6 @@ target_link_libraries(indiscipline
     gobject-2.0
     pangocairo-1.0
 )
+if (USE_GPIO)
+    target_link_libraries(indiscipline i2c pigpio pigpiod_if2)
+endif()

@@ -19,3 +19,11 @@ C++ Engine + Cairo graphics + Lua scripting + OSC server/client + SPI/I2C/GPIO h
 * `/panel <string> <float> <float>` - physical panel mockup, args are device/pin/value
 * `/reset` reloads lua state
 * `/print` Cairo will attempt to save next frame in home dir as PNG
+
+### Direct panel control at `home.lua` page:
+Define a global function `PanelInput(device, pin, state)`. That will be called whenever an interaction happens
+at the physical panel, if the current page is set to `home.lua`.  
+Otherwise, the panel input is redirected to `OSC Port 7779`.
+
+### "text" params
+content, f_size, font, width, alignment

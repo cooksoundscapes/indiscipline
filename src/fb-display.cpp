@@ -1,20 +1,22 @@
 #include "fb-display.h"
 #include "cairo-wrapper.h"
 #include <thread>
+#include <iostream>
 
 void FramebufferDisplay::loop() {
   // prepare pixel data allocation
   int stride = Cairo::getStrideForWidth(width);
   pixel_data.resize(stride * height);
 
-  auto b = high_resolution_clock::now(); 
+  auto a = high_resolution_clock::now(); 
   
   while (!shouldQuit) {	
-    auto a = high_resolution_clock::now();
-    auto delta = duration_cast<milliseconds>(a - b);
+    auto b = high_resolution_clock::now();
+    auto delta = duration_cast<milliseconds>(b - a);
 
     if (delta > frameDuration) {
       draw(stride);
+      a = b;
     } else {
       std::this_thread::sleep_for(frameDuration - delta);
     }
@@ -24,13 +26,12 @@ void FramebufferDisplay::loop() {
 void FramebufferDisplay::draw(int stride) {
   pixel_data.assign(pixel_data.size(), 0);
   Cairo::createSurfaceForData(
-    width, height,
+    0, width, height,
     pixel_data.data(),
     stride
   );
-  if (luaInterpreter != nullptr) {
-    luaInterpreter->updateGlobalVars();
-  }
+  Cairo::setDefaultSurface();
+  luaInterpreter->callFunction(DRAW);
   Cairo::flush();
   Cairo::finalize();
 
@@ -41,4 +42,8 @@ void FramebufferDisplay::draw(int stride) {
     perror("[fb write]");
     exit(1);
   }
+}
+
+void FramebufferDisplay::loadFile(const char* name) {
+  luaInterpreter->loadFile(name);
 }

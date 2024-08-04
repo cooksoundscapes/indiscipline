@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include <algorithm>
 #include "screen-base.h"
 
 class Window : public ScreenBase {
@@ -36,12 +37,14 @@ class Window : public ScreenBase {
   void addDirtyTexture(int textureIndex)
   {
     if (textureIndex < components.size()) {
-     dirtyTexturesIds.push_back(textureIndex);
+      auto it = std::find(dirtyTexturesIds.begin(), dirtyTexturesIds.end(), textureIndex);
+      if (it == dirtyTexturesIds.end()) {
+        dirtyTexturesIds.push_back(textureIndex);
+      }
     }
   }
 
   Uint32 frameDuration;
-  bool shouldPrint = false;
 
 public: 
   Window(int w, int h);
@@ -61,10 +64,6 @@ public:
   }
 
   void loadFile(const char*) override;
-
-  void schedulePrint() override {
-    shouldPrint = true;
-  }
 
   void loop();
 

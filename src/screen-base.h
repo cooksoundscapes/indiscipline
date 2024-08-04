@@ -7,7 +7,7 @@ class ScreenBase {
 protected:
   std::shared_ptr<LuaRunnerBase> luaInterpreter;
 
-  bool shouldQuit = false;
+  bool shouldQuit = false, shouldPrint = false;
   int width, height;
 
 public:
@@ -40,5 +40,5 @@ public:
   }
 
   virtual void loadFile(const char*) = 0;
-  virtual void schedulePrint() = 0;
+  virtual void schedulePrint() { shouldPrint = true; }
 };

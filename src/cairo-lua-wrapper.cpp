@@ -135,7 +135,6 @@ int _text(lua_State* l) {
   const char* font = luaL_optstring(l, 3, "");
   double width = luaL_optnumber(l, 4, 0);
   const char* alignment = luaL_optstring(l, 5, "");
-  bool centered = luaL_optnumber(l, 6, 0);
 
   if (!txt) {
     return luaL_error(l, "Invalid text argument");
@@ -162,7 +161,6 @@ int _text(lua_State* l) {
   params.size = size;
   params.font = font;
   params.width = width;
-  params.centered = centered;
   params.enableAntiAlias = enableAntiAlias;
   params.alignment = alignment;
 
@@ -171,7 +169,6 @@ int _text(lua_State* l) {
   params.size << "; " <<
   params.font << "; " <<
   params.width << "; " <<
-  params.centered << "; " <<
   params.enableAntiAlias << "; " <<
   params.alignment << '\n';*/
 

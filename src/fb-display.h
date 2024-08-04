@@ -32,4 +32,6 @@ public:
   }
 
   void loop() override;
+
+  void loadFile(const char*) override;
 };

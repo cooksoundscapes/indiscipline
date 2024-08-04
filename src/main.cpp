@@ -23,7 +23,11 @@
 #include <memory>
 #include <fstream>
 
-auto graphics = std::make_shared<Window>(WINDOW_WIDTH, WINDOW_HEIGHT);
+#ifdef USE_FB
+  auto graphics = std::make_shared<FramebufferDisplay>(WINDOW_WIDTH, WINDOW_HEIGHT);
+#else 
+  auto graphics = std::make_shared<Window>(WINDOW_WIDTH, WINDOW_HEIGHT);
+#endif
 
 void signalHandler(int signal) {
   if (signal == SIGINT) {
@@ -45,13 +49,8 @@ void setup(
   	std::cerr << "Invalid $HOME env variable, exiting.\n";
   	exit(1);
   }
-  #ifdef USE_SSD1306
-    w = OLED_DISPLAY_WIDTH;
-    h = OLED_DISPLAY_HEIGHT;
-  #else
-    w = WINDOW_WIDTH;
-    h = WINDOW_HEIGHT;
-  #endif
+  w = WINDOW_WIDTH;
+  h = WINDOW_HEIGHT;
   targetFps = TARGET_FPS;
   #ifdef SRC_DIR
     luaPath = std::string(SRC_DIR) + "/views/";

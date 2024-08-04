@@ -259,14 +259,12 @@ void LuaRunner::setTable(std::string name, std::vector<float>& buff)
 
 void LuaRunner::callTableRefFunction(int tableRef, const char* fn)
 {
-  int ssize = lua_gettop(state);
   std::lock_guard<std::recursive_mutex> lock(mutex);
 
   lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
 
   callTableFunction(state, 1, fn, 0, 0);
-
-  lua_settop(state, ssize);
+  lua_pop(state, 1);
 }
 
 void LuaRunner::setCurrentPage(std::string page) {
