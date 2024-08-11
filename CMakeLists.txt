@@ -29,7 +29,11 @@ set(SOURCES
 option(USE_GPIO "use gpio" OFF)
 option(USE_SSD1306 "use OLED display (spi)" OFF)
 option(USE_FB "use direct framebuffer" OFF)
+option(HIDE_CURSOR "SDL hide mouse cursor" OFF)
 
+if (HIDE_CURSOR)
+    add_definitions(-DHIDE_CURSOR)
+endif()
 if (USE_GPIO)
     add_definitions(-DUSE_GPIO)
     list(APPEND SOURCES

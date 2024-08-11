@@ -33,7 +33,9 @@ Window::Window(int w, int h) : ScreenBase(w, h)
   TTF_Init();
 
   // hide mouse - useful for RPI!
-  SDL_ShowCursor(0);
+  #ifdef HIDE_CURSOR
+    SDL_ShowCursor(0);
+  #endif
 
   SDL_version v;
   SDL_GetVersion(&v);
